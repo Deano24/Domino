@@ -1,0 +1,12 @@
+/dist
+/.tmp
+
+# dependencies
+/node_modules
+/bower_components
+
+# misc
+/.sass-cache
+/.env.json
+npm-debug.log
+testem.log
