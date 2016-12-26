@@ -11,6 +11,8 @@ const play = (PIXI) => {
     const dominoes = [
         '0-0', '0-1', '0-2', '0-3', '0-4', '0-5', '0-6', '1-0', '1-1', '1-2', '1-3', '1-4', '1-5', '1-6', '2-0', '2-1', '2-2', '2-3', '2-4', '2-5', '2-6', '3-0', '3-1', '3-2', '3-3', '3-4', '3-5', '3-6', '4-0', '4-1', '4-2', '4-3', '4-4', '4-5', '4-6', '5-0', '5-1', '5-2', '5-3', '5-4', '5-5', '5-6', '6-0', '6-1', '6-2', '6-3', '6-4', '6-5', '6-6'
     ];
+    this.scene.playingArea = [150, 150, (width()-160), (height()-130)];
+    const names = ['Candy Butcher', 'Liquid Science', 'Shooter', 'Capital F', 'Little Cobra', 'Sidewalk Enforcer', 'Captain Peroxide', 'Little General', 'Skull Crusher', 'Celtic Charger', 'Lord Nikon', 'Sky Bully', 'Cereal Killer', 'Lord Pistachio', 'Slow Trot', 'Chicago Blackout', 'Mad Irishman', 'Snake Eyes', 'Chocolate Thunder', 'Mad Jack', 'Snow Hound', 'Chuckles', 'Mad Rascal', 'Sofa King', 'Commando', 'Manimal', 'Speedwell', 'Cool Whip', 'Marbles', 'Spider Fuji', 'Cosmo', 'Married Man', 'Springheel Jack', 'Crash Override', 'Marshmallow', 'Squatch'];
     const draw = () => {
         const hand = [];
         for (let i = 0; i < 7; i++) {
@@ -36,17 +38,107 @@ const play = (PIXI) => {
         dominoTextures[domino] = PIXI.Texture.fromImage(`assets/dominoes/${domino}.png`);
     });
 
-    const showDominoes = (hand) => {
+    function onDragStart (event) {
+        this.data = event.data;
+        this.alpha = 0.5;
+        this.dragging = true;
+    }
+
+    function onDragEnd () {
+        this.alpha = 1;
+        this.dragging = false;
+        this.data = null;
+
+        var point0 = Math.sqrt( 
+            (this.position.x-turnManager.endPoints[0].x)*(this.position.x-turnManager.endPoints[0].x) + 
+            (this.position.y-turnManager.endPoints[0].y)*(this.position.y-turnManager.endPoints[0].y) 
+        );
+        var point1 = Math.sqrt( 
+            (this.position.x-turnManager.endPoints[1].x)*(this.position.x-turnManager.endPoints[1].x) + 
+            (this.position.y-turnManager.endPoints[1].y)*(this.position.y-turnManager.endPoints[1].y) 
+        );
+        console.log('point0 ' + point0 + ' point1 ' + point1);
+        if (Math.abs(point0-point1) < 20) {
+            toastr.error('You placed your domino too close to both endpoints, please ensure its close to where you want to put it.');
+        } else {
+            if (point0 < point1) {
+                const parts = this.domino.split('-');
+                if (parts[0] !== turnManager.options.choices[0] && parts[1] !== turnManager.options.choices[0]) {
+                    toastr.error(`${this.domino} cannot be playd on ${turnManager.options.choices[0]}`);
+                    updateHands();
+                    return;
+                } else {
+                    if (parts[0] === turnManager.options.choices[0]){
+                        turnManager.userPlay({match: parts[0], domino: this.domino, idx: this.idx, side: BoardSides.LEFT, dominoSide: 0}, turnManager.options);
+                    }
+                    if (parts[1] === turnManager.options.choices[0]) {
+                        turnManager.userPlay({match: parts[1], domino: this.domino, idx: this.idx, side: BoardSides.LEFT, dominoSide: 1}, turnManager.options);
+                    }
+                }
+                console.log('Closer to point0 ' + point0 + ' point1 ' + point1 + ' choice ' + turnManager.options.choices[0]);
+            } else {
+                const parts = this.domino.split('-');
+                if (parts[0] !== turnManager.options.choices[1] && parts[1] !== turnManager.options.choices[1]) {
+                    toastr.error(`${this.domino} cannot be playd on ${turnManager.options.choices[1]}`);
+                    updateHands();
+                    return;
+                } else {
+                    if (parts[0] === turnManager.options.choices[1]){
+                        turnManager.userPlay({match: parts[0], domino: this.domino, idx: this.idx, side: BoardSides.RIGHT, dominoSide: 0}, turnManager.options);
+                    }
+                    if (parts[1] === turnManager.options.choices[1]) {
+                        turnManager.userPlay({match: parts[1], domino: this.domino, idx: this.idx, side: BoardSides.RIGHT, dominoSide: 1}, turnManager.options);
+                    }
+                }
+                console.log('Closer to point1 ' + point1 + ' point0 ' + point0 + ' choice ' + turnManager.options.choices[1]);
+            }
+        }
+    }
+
+    function onDragMove () {
+        if (this.dragging)  {
+            var newPosition = this.data.getLocalPosition(this.parent);
+            this.position.x = newPosition.x;
+            this.position.y = newPosition.y;
+        }
+    }
+
+    function animate () {
+        updateRender();
+        requestAnimationFrame( animate );
+    }
+    animate();
+
+    const showDominoes = (hand, selected) => {
         let xStart = (width()/2)-((65*6)/2);
-        hand.forEach((domino) => {
+        const dominoSprites = [];
+        const self = this;
+        hand.forEach((domino, index) => {
             const sprite = new PIXI.Sprite(dominoTextures[domino]);
             sprite.inHand = true;
+            sprite.domino = domino;
+            sprite.idx = index;
             sprite.height = 100;
             sprite.width = 60;
             sprite.position.x = xStart;
             sprite.position.y = height()-60;
+            if (selected && domino === selected) {
+                sprite.position.y-=20;
+            }
             sprite.anchor.x = 0.5;
             sprite.anchor.y = 0.5;
+            sprite.interactive = true;
+
+            sprite
+                .on('mousedown', onDragStart)
+                .on('touchstart', onDragStart)
+                .on('mouseup', onDragEnd)
+                .on('mouseupoutside', onDragEnd)
+                .on('touchend', onDragEnd)
+                .on('touchendoutside', onDragEnd)
+                .on('mousemove', onDragMove)
+                .on('touchmove', onDragMove);
+            dominoSprites.push(sprite);
             this.scene.addChild(sprite);
             xStart+=65;
         });
@@ -65,9 +157,9 @@ const play = (PIXI) => {
         let yStart = y;
 
         hand.forEach((domino) => {
-            const texture = dominoTextures[domino];
-            const sprite = new PIXI.Sprite(texture);
-            //const sprite = new PIXI.Sprite(backTexture);
+            //const texture = dominoTextures[domino];
+            //const sprite = new PIXI.Sprite(texture);
+            const sprite = new PIXI.Sprite(backTexture);
             sprite.inHand = true;
             sprite.domino = domino;
             sprite.height = 100;
@@ -87,7 +179,6 @@ const play = (PIXI) => {
 
     scene.renderPlayers = (userAlias) => {
         const players = [
-            { alias: 'Rohan Malcolm', image: 'player-face-1.png' },
             { alias: 'Test 1' },
             { alias: 'Test 2' },
             { alias: 'Test 3' },
@@ -105,7 +196,7 @@ const play = (PIXI) => {
         };
 
         const left = () => {
-            showPlayer(players[0].alias, players[0].image, 80, (height()/2)-50, -1.56);
+            showPlayer(players[0].alias, players[0].image, 30, (height()/2)-50, -1.56);
         };
 
         const right = () => {
@@ -127,24 +218,40 @@ const play = (PIXI) => {
         this.scene.addChild(aliasText);
 
         const hand = draw();
-        this.scene.playerHand = hand;
+        this.scene.player = {hand: hand, name: userAlias};
         showDominoes(hand);
 
         const leftHand = draw();
-        this.scene.leftPlayerHand = leftHand;
+        this.scene.leftPlayer = {hand: leftHand, name: players[0].alias};
         const rightHand = draw();
-        this.scene.rightPlayerHand = rightHand;
+        this.scene.rightPlayer = {hand: rightHand, name: players[1].alias};
         const topHand = draw();
-        this.scene.topPlayerHand = topHand;
+        this.scene.topPlayer = {hand: topHand, name: players[2].alias};
 
         showDominowBack(topHand, null, 80);
         showDominowBack(leftHand, 90, null, -1.56);
         showDominowBack(rightHand, width()-100, null, -1.56);
     };
 
-    const putDominoOnBoard = (domino, x, y, angle) => {
-        const dominoHeight = 65;
-        const dominoWidth = 30;
+    scene.renderPassText = () => {
+        const text = new PIXI.Text('PASS  ', { fontFamily: 'Arvo', fontSize: '60px', fontStyle: 'bold italic', fill: '#3e1707', align: 'center', stroke: '#a4410e', strokeThickness: 7 });
+        text.position.x = width() - (80);
+        text.position.y = height() - (text.height+20);
+        text.anchor.x = 0.5;
+        text.interactive = true;
+        text.click = () => {
+            turnManager.userPlay({match: -1, domino: null});
+        };
+        this.scene.addChild(text);
+    };
+
+    const isDouble = (domino) => {
+        return domino === '0-0' || domino === '1-1' || domino === '2-2' || domino === '3-3' || domino === '4-4' || domino === '5-5' || domino === '6-6';
+    };
+
+    const putDominoOnBoard = (domino, x, y, angle, options) => {
+        let dominoHeight = 65;
+        let dominoWidth = 30;
         const texture = dominoTextures[domino];
         const sprite = new PIXI.Sprite(texture);
         sprite.position.x = x;
@@ -154,24 +261,35 @@ const play = (PIXI) => {
         sprite.onBoard = true;
         if (angle) {
            sprite.rotation += angle;
+           const temp = dominoHeight;
+           dominoHeight = dominoWidth;
+           dominoWidth = temp;
         }
         this.scene.addChild(sprite);
-        if (!this.scene.endPoints) {
-            if (domino === '0-0' || domino === '1-1' || domino === '2-2' || domino === '3-3' || domino === '4-4' || domino === '5-5' || domino === '6-6' ) {
-                const obj = {};
-                const parts = domino.split('-');
-                obj[`${parts[0]}0`] = {x:x, y:y+dominoHeight/4};
-                obj[`${parts[1]}1`] = {x:x+dominoWidth, y:y+dominoHeight/4};
-                this.scene.endPoints = obj;
+        if (options.incrementY) {
+            y += options.incrementY;
+        }
+        const obj = this.scene.endPoints || {};
+        if (options.pose) {
+            if (isDouble()) {
+                obj[0] = {x:x, y:y+dominoHeight/4};
+                obj[1] = {x:x+dominoWidth, y:y+dominoHeight/4};
+            } else {
+                obj[0] = {x:x, y:y+dominoHeight/4};
+                obj[1] = {x:x+dominoWidth, y:y+dominoHeight/4};
             }
         } else {
-            
+            if (options.side === BoardSides.LEFT) {
+                obj[options.side] = {x:x-dominoWidth, y};
+            } else if (options.side === BoardSides.RIGHT) {
+                if (isDouble(domino)) {
+                    obj[options.side] = {x:x+dominoWidth, y};
+                } else {
+                   obj[options.side] = {x:x, y}; 
+                }
+            }
         }
-    };
-
-    const getEndPointsXY = () => {
-        const len = this.scene.children.length;
-
+        this.scene.endPoints = obj;
     };
 
     const updateHands = () => {
@@ -181,10 +299,10 @@ const play = (PIXI) => {
                 this.scene.removeChild(child);
             }
         }
-        showDominoes(this.scene.playerHand);
-        showDominowBack(this.scene.topPlayerHand, null, 80);
-        showDominowBack(this.scene.leftPlayerHand, 90, null, -1.56);
-        showDominowBack(this.scene.rightPlayerHand, width()-100, null, -1.56);
+        showDominoes(this.scene.player.hand);
+        showDominowBack(this.scene.topPlayer.hand, null, 80);
+        showDominowBack(this.scene.leftPlayer.hand, 90, null, -1.56);
+        showDominowBack(this.scene.rightPlayer.hand, width()-100, null, -1.56);
     };
 
     this.scene.addChild(title);

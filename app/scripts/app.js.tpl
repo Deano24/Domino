@@ -1,6 +1,6 @@
 'use strict';
 
-
+toastr.options.timeOut = 1000;
 const renderer = PIXI.autoDetectRenderer(width(), height(), {backgroundColor : 0x1099bb});
 document.body.appendChild(renderer.view);
 const stage = new PIXI.Container();
@@ -8,6 +8,11 @@ const Scenes = {
     LANDING: 0, 
     ROOM: 1, 
     PLAY: 2,
+};
+
+const BoardSides = {
+    LEFT: 0,
+    RIGHT: 1,
 };
 
 let sceneLanding, sceneRoom, scenePlay;
@@ -41,6 +46,7 @@ const showScene = (scene) => {
             break;
         case Scenes.PLAY:
             scenePlay.renderPlayers(userAlias);
+            scenePlay.renderPassText();
             scenePlay.visible = true;
             turnManager.playScene = scenePlay;
             turnManager.updateRender = updateRender;

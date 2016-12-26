@@ -11,6 +11,13 @@
   "undef": true,
   "unused": true,
   "globals": {
-    "angular": false
+    "angular": false,
+    "toastr": true,
+    "ai": true,
+    "width": true,
+    "height": true,
+    "BoardSides": true,
+    "turnManager": true,
+    "this": true
   }
 }
