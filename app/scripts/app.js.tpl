@@ -1,23 +1,51 @@
 'use strict';
 
 toastr.options.timeOut = 1000;
+toastr.options.onclick = function(event) { 
+    if (event.currentTarget.innerText.includes('. Click here to play again.')) {
+        restartGame();
+    }
+};
 const renderer = PIXI.autoDetectRenderer(width(), height(), {backgroundColor : 0x1099bb});
 document.body.appendChild(renderer.view);
 const stage = new PIXI.Container();
+
+/**
+ * different scenes that can be shown
+ * @type {Enum}
+ */
 const Scenes = {
     LANDING: 0, 
     ROOM: 1, 
     PLAY: 2,
 };
 
+/**
+ * Sides of the board
+ * @type {Enum}
+ */
 const BoardSides = {
     LEFT: 0,
     RIGHT: 1,
 };
 
+/**
+ * Player positions on the board
+ * @type {Enum}
+ */
+const Player = {
+    BOTTOM: 0,
+    RIGHT: 1,
+    TOP: 2,
+    LEFT: 3
+};
+
 let sceneLanding, sceneRoom, scenePlay;
 let userAlias;
 
+/**
+ * Loads all the scenes to be used later.
+ */
 const loadScenes = () => {
     sceneLanding = landing(PIXI);
     sceneRoom = rooms(PIXI);
@@ -28,10 +56,17 @@ const loadScenes = () => {
     showScene(Scenes.LANDING);
 };
 
+/**
+ * Re-renders the scene
+ */
 const updateRender = () =>{
     renderer.render(stage);
 };
 
+/**
+ * Shhows a specific scene
+ * @param {Integer} scene - The scene to show
+ */
 const showScene = (scene) => {
     sceneLanding.visible = false;
     sceneRoom.visible = false;
@@ -54,6 +89,15 @@ const showScene = (scene) => {
             break;
     }
     renderer.render(stage);
+};
+
+/**
+ * Restarts the game
+ */
+const restartGame = () => {
+    scenePlay.resetDomino();
+    scenePlay.resetBoard();
+    showScene(Scenes.PLAY);
 };
 
 // Load them google fonts before starting...!

@@ -1,14 +1,10 @@
 'use strict';
 
-const Player = {
-    BOTTOM: 0,
-    RIGHT: 1,
-    TOP: 2,
-    LEFT: 3
-};
-const isDouble = (domino) => {
-    return domino === '0-0' || domino === '1-1' || domino === '2-2' || domino === '3-3' || domino === '4-4' || domino === '5-5' || domino === '6-6';
-};
+/**
+ * Gets the count in the user's hand.
+ * @param {Array} hand - The user's hand.
+ * @return {Integer} The total count in the user's hand.
+ */
 const getHandCount = (hand) => {
     let count = 0;
     hand.forEach((domino) => {
@@ -17,6 +13,13 @@ const getHandCount = (hand) => {
     });
     return count;
 };
+
+/**
+ * Get the way the domino's need to be placed to be matched.
+ * @param {Array} parts - The values at the two parts of the table.
+ * @param {String} value - The value to be checked.
+ * @return {String} The domino required to be played.
+ */
 const getMatchedDomino = (parts, value) => {
     let domino = '';
     if (parts[0] === value) {
@@ -26,19 +29,23 @@ const getMatchedDomino = (parts, value) => {
     }
     return domino;
 };
+
+//keeps track of options
 let globalOptions = {};
+//keeps track of the current user's turn
 let currentTurn;
+
 const turnManager = {
+    /**
+     * Starts the domino game
+     */
     start() {
         let player;
         const playerHand = this.playScene.player.hand;
         for (let i = 0; i < playerHand.length; i++) {
             if (playerHand[i] === '6-6') {
                 playerHand.splice(i, 1);
-                this.playScene.putDominoOnBoard('6-6', width()/2, (height()/2 - 35), null, {pose: true});
-                this.updateRender();
                 player = Player.RIGHT;
-                toastr.success('Your play!!');
                 break;
             }
         }
@@ -46,8 +53,6 @@ const turnManager = {
         for (let i = 0; i < leftPlayerHand.length; i++) {
             if (leftPlayerHand[i] === '6-6') {
                 leftPlayerHand.splice(i, 1);
-                this.playScene.putDominoOnBoard('6-6', width()/2,(height()/2 - 35), null, {pose: true});
-                this.updateRender();
                 player = Player.BOTTOM;
                 break;
             }
@@ -56,8 +61,6 @@ const turnManager = {
         for (let i = 0; i < rightPlayerHand.length; i++) {
             if (rightPlayerHand[i] === '6-6') {
                 leftPlayerHand.splice(i, 1);
-                this.playScene.putDominoOnBoard('6-6', width()/2,(height()/2 - 35), null, {pose: true});
-                this.updateRender();
                 player = Player.TOP;
                 break;
             }
@@ -66,16 +69,20 @@ const turnManager = {
         for (let i = 0; i < topPlayerHand.length; i++) {
             if (topPlayerHand[i] === '6-6') {
                 topPlayerHand.splice(i, 1);
-                this.playScene.putDominoOnBoard('6-6', width()/2,(height()/2 - 35), null, {pose: true});
-                this.updateRender();
                 player = Player.LEFT;
                 break;
             }
         }
+        this.playScene.putDominoOnBoard('6-6', width()/2,(height()/2 - 35), null, {pose: true});
         this.playScene.updateHands();
         this.next(player, { choices: ['6', '6'], passCount: 0, lastPlayed: ['6-6','6-6'], pose: true});
     },
 
+    /**
+     * Allows a user to play on the board.
+     * @param {Object} play - The play that should be made.
+     * @param {Object} options - Additional options to be passed to the function.
+     */
     userPlay (play, options) {
         if (currentTurn !== Player.BOTTOM) {
             return;
@@ -86,6 +93,11 @@ const turnManager = {
         this.handlePlay(play, this.playScene.player.hand, this.playScene.player, Player.RIGHT, options);
     },
 
+    /**
+     * Allows the next player to play.
+     * @param {Integer} player - The player to play.
+     * @param {Object} options - Additional options to be passed to the function.
+     */
     next (player, options) {
         currentTurn = player;
         globalOptions = options;
@@ -125,6 +137,14 @@ const turnManager = {
        }
     },
 
+    /**
+     * handles the play by the AI or user.
+     * @param {Object} play - The play that should be made.
+     * @param {Array} hand - The players hand.
+     * @param {Object} playerInfo - The player's information.
+     * @param {Integer} nextPlayer - The next player.
+     * @param {Object} options - Additional options to be passed to the function.
+     */
     handlePlay (play, hand, playerInfo, nextPlayer, options) {
         const pose = options.pose;
         if (play.match !== -1) {
@@ -238,7 +258,7 @@ const turnManager = {
             this.playScene.updateHands();
             this.updateRender();
             if (hand.length === 0) {
-                toastr.success(`${playerInfo.name} wins the game. Click here to play again.`, 'Game Over', {timeOut: 0});
+                const win = toastr.success(`${playerInfo.name} wins the game. Click here to play again.`, 'Game Over', {timeOut: 0});
                 return;
             }
         } else {
@@ -254,8 +274,7 @@ const turnManager = {
                 bottom.value = getHandCount(bottom.hand);
                 var order = [{loc: 'right', value: right}, {loc: 'left', value: left}, {loc: 'top', value: top}, {loc: 'bottom', value: bottom}];
                 order.sort(function(a, b){return a.value.value-b.value.value;});
-                console.log(order);
-                toastr.success(`The winning player is: ${order[0].value.name} with a score of ${order[0].value.value}. Click here to play again.`, 'Game Over', {timeOut: 0});
+                const win = toastr.success(`The winning player is: ${order[0].value.name} with a score of ${order[0].value.value}. Click here to play again.`, 'Game Over', {timeOut: 0});
                 return;
             } else {
                options.passCount++;

@@ -16,8 +16,16 @@
     "ai": true,
     "width": true,
     "height": true,
+    "isDouble": true,
     "BoardSides": true,
     "turnManager": true,
-    "this": true
+    "this": true,
+    "scene": true,
+    "PIXI": true,
+    "landing": true,
+    "room": true,
+    "play": true,
+    "Player": true,
+    "restartGame": true
   }
 }

@@ -1,7 +1,7 @@
 {
-  "name": "dominoes",
+  "name": "dominos",
   "version": "1.0.0",
-  "description": "",
+  "description": "A simple remake of the domino game",
   "main": "scripts/app.js",
   "dependencies": {},
   "devDependencies": {
@@ -36,6 +36,6 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
-  "author": "",
-  "license": "ISC"
+  "author": "Rohan Malcolm",
+  "license": "MIT License"
 }
