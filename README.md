@@ -1,4 +1,4 @@
-# Contract Entry Annual DLE Game Tournament
+# Contest Entry in the Annual DLE Game Tournament
 
 A domino game to be entered into the annual DLE game tournament.
 
