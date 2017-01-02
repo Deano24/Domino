@@ -59,8 +59,6 @@ const play = (PIXI) => {
         for (let i = 0; i < 7; i++) {
             const choice = Math.floor(Math.random() * dominos.length);
             const domino = dominos.splice(choice, 1)[0];
-            console.log(domino);
-            console.log(dominos);
             if (!isDouble(domino)) {
                 let index = 99999999;
                 const parts = domino.split('-');
