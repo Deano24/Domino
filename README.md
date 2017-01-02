@@ -13,6 +13,7 @@ The following is required to work with the program:
 * Node & NPM
 * Grunt
 * Bower
+* Compass
 
 ```
 curl -sL https://deb.nodesource.com/setup_6.x | sudo -E bash -
@@ -34,7 +35,7 @@ A step by step series of examples that tell you have to get a development env ru
 Get a copy of the repo
 
 ```
-git clone https://github.com/Deano24/Domino.git Domino
+git clone --branch master https://github.com/Deano24/Domino.git Domino
 ```
 
 Navigate to project directory
@@ -53,6 +54,12 @@ Install bower libraries
 
 ```
 bower install
+```
+
+Install Compass (Assume Ruby)
+
+```
+gem install compass
 ```
 
 Running the program
