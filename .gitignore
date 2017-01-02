@@ -7,6 +7,5 @@
 
 # misc
 /.sass-cache
-/.env.json
 npm-debug.log
 testem.log
