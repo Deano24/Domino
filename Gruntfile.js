@@ -60,7 +60,7 @@ module.exports = function (grunt) {
       },
       compass: {
         files: ['<%= yeoman.app %>/styles/{,*/}*.{scss,sass}'],
-        tasks: ['compass:server', 'postcss:server']
+        tasks: ['postcss:server']
       },
       gruntfile: {
         files: ['Gruntfile.js']
@@ -448,8 +448,7 @@ module.exports = function (grunt) {
     // Run some tasks in parallel to speed up the build process
     concurrent: {
       server: [
-        'templateApp:development',
-        'compass:server'
+        'templateApp:development'
       ],
       test: [
         'compass'
