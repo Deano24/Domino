@@ -1,24 +1,59 @@
 <head>
     <meta charset="utf-8">
     <title>Play domino</title> 
-    <link href="../bower_components/toastr/toastr.min.css" rel="stylesheet"/>
+    <link href="bower_components/toastr/toastr.min.css" rel="stylesheet"/>
+    <link href="bower_components/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet"/>
+    <link href="styles/main.css" rel="stylesheet"/>
 </head>
 <body>
-    <script type="text/javascript" src="../bower_components/pixi.js/dist/pixi.js"></script>
-    <script type="text/javascript" src="../bower_components/jquery/dist/jquery.min.js"></script>
-    <script type="text/javascript" src="../bower_components/toastr/toastr.min.js"></script>
-    <script type="text/javascript" src="../bower_components/lodash/dist/lodash.min.js"></script>
-
-    <!-- Helpers -->
-    <script type="text/javascript" src="scripts/helpers/helper.js"></script>
-    <script type="text/javascript" src="scripts/helpers/ai.js"></script>
-    <script type="text/javascript" src="scripts/helpers/turnManager.js"></script>
-
-    <!-- Scenes -->
-    <script type="text/javascript" src="scripts/scenes/landing.js"></script>
-    <script type="text/javascript" src="scripts/scenes/room.js"></script>
-    <script type="text/javascript" src="scripts/scenes/play.js"></script>
-
-    <!-- Main loader -->
-    <script type="text/javascript" src="scripts/app.js"></script>
+    <header class="intro-header">
+        <img src="assets/banner.png" style="width: 100%; height: 100%;">
+    </header>
+    <div class="container">
+        <div class="row">
+            <form>
+                <div class="form-group">
+                    <input type="text" class="form-control" placeholder="Player Alias" id="alias">
+                </div>
+            </form>
+        </div>
+        <div class="row">
+            <div class="rooms col-md-8 col-xs-12 rounded">
+                <h1 class="rowtitle"><span class="ep1">Rooms</span></h1>
+                <div class="row col-md-6 col-xs-12">
+                    <div class="col-md-11 col-xs-11">
+                        <p class="center"><strong>Kings Haven</strong> Classic Game</p>
+                        <a class="btn-join col-md-12 col-xs-12 rounded" onclick="onRoomSelected('/play.html?room=1234')">(1/4) Join<span class="glyphicon glyphicon-chevron-right"></span></a>
+                    </div>
+                </div>
+                <div class="row col-md-6 col-xs-12">
+                    <div class="col-md-11 col-xs-11">
+                        <p class="center"><strong>Kings Haven</strong> Classic Game</p>
+                        <a class="btn-join col-md-12 col-xs-12 rounded">(1/4) Join<span class="glyphicon glyphicon-chevron-right"></span></a>
+                    </div>
+                </div>
+                <div class="row col-md-6 col-xs-12">
+                    <div class="col-md-11 col-xs-11">
+                        <p class="center"><strong>Kings Haven</strong> Classic Game</p>
+                        <a class="btn-join col-md-12 col-xs-12 rounded">(1/4) Join<span class="glyphicon glyphicon-chevron-right"></span></a>
+                    </div>
+                </div>
+                <div class="row col-md-6 col-xs-12">
+                    <div class="col-md-11 col-xs-11">
+                        <p class="center"><strong>Kings Haven</strong> Classic Game</p>
+                        <a class="btn-join col-md-12 col-xs-12 rounded">(1/4) Join<span class="glyphicon glyphicon-chevron-right"></span></a>
+                    </div>
+                </div>
+            </div>
+            <div class="news col-md-offset-1 col-md-3 col-xs-12 rounded">
+                <h1 class="rowtitle"><span class="ep1">News</span></h1>
+            </div>
+            <script type="text/javascript">
+                function onRoomSelected (url) {
+                    localStorage.setItem("alias", document.getElementById('alias').value);
+                    window.location.href = url;
+                };
+            </script>
+        </div>
+    </div>
 </body>

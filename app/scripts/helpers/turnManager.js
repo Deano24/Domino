@@ -151,7 +151,7 @@ const turnManager = {
             options.pose = false;
             options.passCount = 0;
             hand.splice(play.idx, 1);
-            let angle = 1.56;
+            let angle = 1.565;
             let domino = play.domino;
             const loc = this.playScene.endPoints[play.side];
             let x = loc.x;
@@ -206,7 +206,7 @@ const turnManager = {
                         y-=15;
                     }
                     if (y < this.playScene.playingArea[1]) {
-                        angle = 1.56;
+                        angle = 1.565;
                         y = loc.y;
                         x = loc.x+(dominoHeight*2);
                     }
@@ -239,7 +239,7 @@ const turnManager = {
                         x-=dominoWidth;
                     }
                     if (y+dominoHeight > this.playScene.playingArea[3]) {
-                        angle = 1.56;
+                        angle = 1.565;
                         y = loc.y;
                         x = loc.x-dominoHeight;
                         if (!options.completeTurn) {

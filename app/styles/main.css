@@ -1,0 +1,104 @@
+/*!
+ * Start Bootstrap - Clean Blog v3.3.7+1 (http://startbootstrap.com/template-overviews/clean-blog)
+ * Copyright 2013-2016 Start Bootstrap
+ * Licensed under MIT (https://github.com/BlackrockDigital/startbootstrap/blob/gh-pages/LICENSE)
+ */
+body {
+  font-family: 'Lora', 'Times New Roman', serif;
+  font-size: 20px;
+  color: #333333;
+  background: #21751c;
+}
+p {
+  line-height: 1.5;
+  margin: 30px 0;
+}
+p a {
+  text-decoration: underline;
+}
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  font-family: 'Open Sans', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+  font-weight: 800;
+}
+.intro-header {
+  background-color: #777777;
+  background: no-repeat center center;
+  background-attachment: scroll;
+  -webkit-background-size: cover;
+  -moz-background-size: cover;
+  background-size: cover;
+  -o-background-size: cover;
+  margin-bottom: 50px;
+  height: 500px;
+}
+
+div.scheduler-border {
+  border: 1px groove #ddd !important;
+  padding: 0 1.4em 1.4em 1.4em !important;
+  margin: 0 0 1.5em 0 !important;
+  -webkit-box-shadow:  0px 0px 0px 0px #000;
+  box-shadow:  0px 0px 0px 0px #000;
+}
+
+legend.scheduler-border {
+  font-size: 1.2em !important;
+  font-weight: bold !important;
+  text-align: left !important;
+  width:auto;
+  padding:0 10px;
+  border-bottom:none;
+}
+
+.rowtitle {
+  font-size: 40px;
+  text-transform: uppercase;
+  padding: 20px 0px;
+  border-left: 5px solid #E83A34;
+  background-image: url(../assets/dot.gif);
+  background-repeat: repeat-X;
+  background-position: center right;
+  margin: 20px 15px;
+}
+.rowtitle span.ep1 {
+  background: #fff;
+  display: inline-block;
+  padding-left: 10px;
+  padding-right: 20px;
+  color: #000;
+}
+.rooms,.news {
+  background: white;
+}
+.rounded {
+  border-radius: 10px;
+}
+
+.btn-join {
+  color: #fff;
+  background: #E83A34;
+  display: inline-block;
+  font-size: 12px;
+  height: 40px;
+  line-height: 40px;
+  margin: 5px 0px 0px;
+  padding: 0px 20px;
+  text-transform: uppercase;
+  text-decoration: none;
+  transition: all 0.3s;
+  -webkit-transition: all 300ms;
+  text-align: center;
+  cursor: pointer; 
+  cursor: hand;
+}
+.btn-join:focus, .btn-join:hover {
+  color: #000;
+  text-decoration: underline;
+}
+.center {
+  text-align: center;
+}

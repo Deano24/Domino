@@ -6,19 +6,10 @@ toastr.options.onclick = function(event) {
         restartGame();
     }
 };
-const renderer = PIXI.autoDetectRenderer(width(), height(), {backgroundColor : 0x1099bb});
+const renderer = PIXI.autoDetectRenderer(width(), height(), {backgroundColor : 0x21751C});
 document.body.appendChild(renderer.view);
+renderer.backgroundColor = 0x21751C;
 const stage = new PIXI.Container();
-
-/**
- * different scenes that can be shown
- * @type {Enum}
- */
-const Scenes = {
-    LANDING: 0, 
-    ROOM: 1, 
-    PLAY: 2,
-};
 
 /**
  * Sides of the board
@@ -40,21 +31,14 @@ const Player = {
     LEFT: 3
 };
 
-let sceneLanding, sceneRoom, scenePlay;
-let userAlias;
+let scenePlay;
+let userAlias = localStorage.getItem("alias");
 
-/**
- * Loads all the scenes to be used later.
- */
-const loadScenes = () => {
-    sceneLanding = landing(PIXI);
-    sceneRoom = rooms(PIXI);
+const setup = () => {
     scenePlay = play(PIXI);
-    stage.addChild(sceneLanding);
-    stage.addChild(sceneRoom);
     stage.addChild(scenePlay);
-    showScene(Scenes.LANDING);
-};
+    showScene();
+}; 
 
 /**
  * Re-renders the scene
@@ -67,27 +51,14 @@ const updateRender = () =>{
  * Shhows a specific scene
  * @param {Integer} scene - The scene to show
  */
-const showScene = (scene) => {
-    sceneLanding.visible = false;
-    sceneRoom.visible = false;
+const showScene = () => {
     scenePlay.visible = false;
-    switch(scene) {
-        case Scenes.LANDING:
-            sceneLanding.visible = true;
-            break;
-        case Scenes.ROOM:
-            sceneRoom.updateName(userAlias);
-            sceneRoom.visible = true;
-            break;
-        case Scenes.PLAY:
-            scenePlay.renderPlayers(userAlias);
-            scenePlay.renderPassText();
-            scenePlay.visible = true;
-            turnManager.playScene = scenePlay;
-            turnManager.updateRender = updateRender;
-            turnManager.start();
-            break;
-    }
+    scenePlay.renderPlayers(userAlias);
+    scenePlay.renderPassText();
+    scenePlay.visible = true;
+    turnManager.playScene = scenePlay;
+    turnManager.updateRender = updateRender;
+    turnManager.start();
     renderer.render(stage);
 };
 
@@ -97,7 +68,7 @@ const showScene = (scene) => {
 const restartGame = () => {
     scenePlay.resetDomino();
     scenePlay.resetBoard();
-    showScene(Scenes.PLAY);
+    showScene();
 };
 
 // Load them google fonts before starting...!
@@ -105,7 +76,7 @@ window.WebFontConfig = {
     google: {
         families: ['Snippet', 'Arvo:700italic', 'Podkova:700']
     },
-    active: loadScenes,
+    active: setup
 };
 
 // include the web-font loader script

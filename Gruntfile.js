@@ -37,16 +37,16 @@ module.exports = function (grunt) {
         files: ['bower.json'],
         tasks: ['wiredep']
       },
-      templateApp: {
-        files: [
-          'app/scripts/app.js.tpl',
-          '.env.json'
-        ],
-        tasks: ['templateApp:development'],
-        options: {
-          livereload: '<%= connect.options.livereload %>'
-        }
-      },
+      // templateApp: {
+      //   files: [
+      //     'app/scripts/app.js.tpl',
+      //     '.env.json'
+      //   ],
+      //   tasks: ['templateApp:development'],
+      //   options: {
+      //     livereload: '<%= connect.options.livereload %>'
+      //   }
+      // },
       js: {
         files: ['app/scripts/{,*/}*.js'],
         tasks: ['newer:jshint:all', 'newer:jscs:all'],
@@ -447,9 +447,7 @@ module.exports = function (grunt) {
 
     // Run some tasks in parallel to speed up the build process
     concurrent: {
-      server: [
-        'templateApp:development'
-      ],
+      server: [],
       test: [
         'compass'
       ],
@@ -512,7 +510,6 @@ module.exports = function (grunt) {
     'clean:dist',
     'wiredep',
     'useminPrepare',
-    'templateApp:production',
     'concurrent:dist',
     'postcss',
     'ngtemplates',

@@ -15,13 +15,48 @@ const play = (PIXI) => {
     //Hash map containing textures for the dominos.
     const dominoTextures = {};
 
+    const players = [
+        { alias: 'Test 1' },
+        { alias: 'Test 2' },
+        { alias: 'Test 3' },
+    ];
+
+
+
+    const showPlayer = (playerName, x, y, angle) => {
+        const name = new PIXI.Text(playerName, { fontFamily: 'Arvo', fontSize: '25px', fontStyle: 'bold', fill: 'black', align: 'center', stroke: 'yellow', strokeThickness: 2 });
+        name.position.x = x - (name.width/2);
+        name.position.y = y;
+        if (angle) {
+           name.rotation += angle;
+           name.position.y = y - (name.width/2);
+        } 
+        this.scene.addChild(name);
+    };
+
+    const left = () => {
+        showPlayer(players[0].alias, 90, (height()/2), 1.565);
+    };
+
+    const right = () => {
+        showPlayer(players[1].alias, width()-20, (height()/2), -1.565);
+    };
+
+    const top = () => {
+        showPlayer(players[2].alias, width()/2, 10);
+    };
+
     //List of possible dominos.
-    let dominos = [
+    const dominos = [
         '0-0', '0-1', '0-2', '0-3', '0-4', '0-5', '0-6', '1-0', '1-1', '1-2', '1-3', '1-4', '1-5', '1-6', '2-0', '2-1', '2-2', '2-3', '2-4', '2-5', '2-6', '3-0', '3-1', '3-2', '3-3', '3-4', '3-5', '3-6', '4-0', '4-1', '4-2', '4-3', '4-4', '4-5', '4-6', '5-0', '5-1', '5-2', '5-3', '5-4', '5-5', '5-6', '6-0', '6-1', '6-2', '6-3', '6-4', '6-5', '6-6'
     ];
 
+    let dominoToDrawFrom = [
+            '0-0', '0-1', '0-2', '0-3', '0-4', '0-5', '0-6', '1-1', '1-2', '1-3', '1-4', '1-5', '1-6', '2-2', '2-3', '2-4', '2-5', '2-6', '3-3', '3-4', '3-5', '3-6', '4-4', '4-5', '4-6', '5-5', '5-6', '6-6'
+        ];
+
     //The playing area that the dominos can be played on.
-    this.scene.playingArea = [150, 150, (width()-160), (height()-130)];
+    this.scene.playingArea = [100, 100, (width()-100), (height()-130)];
 
     //loads the texture for each domino.
     dominos.forEach((domino) => {
@@ -34,8 +69,8 @@ const play = (PIXI) => {
      * Rests the list of domino
      */
     scene.resetDomino = () => {
-        dominos = [
-            '0-0', '0-1', '0-2', '0-3', '0-4', '0-5', '0-6', '1-0', '1-1', '1-2', '1-3', '1-4', '1-5', '1-6', '2-0', '2-1', '2-2', '2-3', '2-4', '2-5', '2-6', '3-0', '3-1', '3-2', '3-3', '3-4', '3-5', '3-6', '4-0', '4-1', '4-2', '4-3', '4-4', '4-5', '4-6', '5-0', '5-1', '5-2', '5-3', '5-4', '5-5', '5-6', '6-0', '6-1', '6-2', '6-3', '6-4', '6-5', '6-6'
+        dominoToDrawFrom = [
+            '0-0', '0-1', '0-2', '0-3', '0-4', '0-5', '0-6', '1-1', '1-2', '1-3', '1-4', '1-5', '1-6', '2-2', '2-3', '2-4', '2-5', '2-6', '3-3', '3-4', '3-5', '3-6', '4-4', '4-5', '4-6', '5-5', '5-6', '6-6'
         ];
     };
     /**
@@ -57,19 +92,8 @@ const play = (PIXI) => {
     const draw = () => {
         const hand = [];
         for (let i = 0; i < 7; i++) {
-            const choice = Math.floor(Math.random() * dominos.length);
-            const domino = dominos.splice(choice, 1)[0];
-            if (!isDouble(domino)) {
-                let index = 99999999;
-                const parts = domino.split('-');
-                for (let x = 0; x < dominos.length; x++) {
-                    if (dominos[x] === `${parts[1]}-${parts[0]}`) {
-                        index = x;
-                        break;
-                    }
-                }
-                dominos.splice(index, 1);
-            }
+            const choice = Math.floor(Math.random() * dominoToDrawFrom.length);
+            const domino = dominoToDrawFrom.splice(choice, 1)[0];
             hand.push(domino);
         }
         return hand;
@@ -123,6 +147,15 @@ const play = (PIXI) => {
         if (!y) {
             y = (height()/2)-((65*hand.length)/2);
         }
+        if (angle) {
+            if (Math.abs(x-0) < Math.abs(x-width())) {
+                x -= 80;
+            } else {
+                x += 80;
+            }
+        } else {
+            y -= 80;
+        }
         let xStart = x;
         let yStart = y;
 
@@ -156,8 +189,12 @@ const play = (PIXI) => {
         }
         showDominos(this.scene.player.hand);
         showDominowBack(this.scene.topPlayer.hand, null, 80);
-        showDominowBack(this.scene.leftPlayer.hand, 90, null, -1.56);
-        showDominowBack(this.scene.rightPlayer.hand, width()-100, null, -1.56);
+        showDominowBack(this.scene.leftPlayer.hand, 90, null, 1.565);
+        showDominowBack(this.scene.rightPlayer.hand, width()-100, null, 1.565);
+
+        left();
+        right();
+        top();
     };
 
     /**
@@ -256,38 +293,6 @@ const play = (PIXI) => {
      * @param {String} userAlias - The user's alias.
      */
     scene.renderPlayers = (userAlias) => {
-        const players = [
-            { alias: 'Test 1' },
-            { alias: 'Test 2' },
-            { alias: 'Test 3' },
-        ];
-
-        const showPlayer = (playerName, image, x, y, angle) => {
-            const name = new PIXI.Text(playerName, { fontFamily: 'Snippet', fontSize: '20px', fill: 'white', align: 'left' });
-            name.position.x = x - (name.width/2);
-            name.position.y = y;
-            if (angle) {
-               name.rotation += angle;
-               name.position.y = y + (name.width/2);
-            } 
-            this.scene.addChild(name);
-        };
-
-        const left = () => {
-            showPlayer(players[0].alias, players[0].image, 30, (height()/2)-50, -1.56);
-        };
-
-        const right = () => {
-            showPlayer(players[1].alias, players[0].image, width()-20, (height()/2)-50, -1.56);
-        };
-
-        const top = () => {
-            showPlayer(players[2].alias, players[0].image, width()/2, 10);
-        };
-
-        left();
-        right();
-        top();
 
         const aliasText = new PIXI.Text(`User: ${userAlias}`, { fontFamily: 'Snippet', fontSize: '25px', fill: 'white', align: 'left' });
 
@@ -307,8 +312,12 @@ const play = (PIXI) => {
         this.scene.topPlayer = {hand: topHand, name: players[2].alias};
 
         showDominowBack(topHand, null, 80);
-        showDominowBack(leftHand, 90, null, -1.56);
-        showDominowBack(rightHand, width()-100, null, -1.56);
+        showDominowBack(leftHand, 90, null, 1.565);
+        showDominowBack(rightHand, width()-100, null, 1.565);
+
+        left();
+        right();
+        top();
     };
 
     /**

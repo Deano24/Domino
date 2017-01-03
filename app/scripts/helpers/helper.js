@@ -5,7 +5,7 @@
  * @return {Integer} The screens height.
  */
 const height = () => {
-    return  (window.innerHeight || document.documentElement.clientHeight || document.body.clientHeight) - 20;
+    return  (window.innerHeight || document.documentElement.clientHeight || document.body.clientHeight);
 };
 
 /**
@@ -13,7 +13,10 @@ const height = () => {
  * @return {Integer} The screens width.
  */
 const width = () => {
-    return (window.innerWidth || document.documentElement.clientWidth || document.body.clientWidth) - 20;
+    console.log();
+    console.log();
+    console.log();
+    return (window.innerWidth || document.documentElement.clientWidth || document.body.clientWidth);
 };
 
 /**
