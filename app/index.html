@@ -3,6 +3,7 @@
     <title>Play domino</title> 
     <link href="bower_components/toastr/toastr.min.css" rel="stylesheet"/>
     <link href="bower_components/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet"/>
+    <link href="bower_components/sweetalert/dist/sweetalert.css" rel="stylesheet">
     <link href="styles/main.css" rel="stylesheet"/>
 </head>
 <body>
@@ -10,13 +11,6 @@
         <img src="assets/banner.png" style="width: 100%; height: 100%;">
     </header>
     <div class="container">
-        <div class="row">
-            <form>
-                <div class="form-group">
-                    <input type="text" class="form-control" placeholder="Player Alias" id="alias">
-                </div>
-            </form>
-        </div>
         <div class="row">
             <div class="rooms col-md-8 col-xs-12 rounded">
                 <h1 class="rowtitle"><span class="ep1">Rooms</span></h1>
@@ -48,11 +42,29 @@
             <div class="news col-md-offset-1 col-md-3 col-xs-12 rounded">
                 <h1 class="rowtitle"><span class="ep1">News</span></h1>
             </div>
+            <script type="text/javascript" src="bower_components/sweetalert/dist/sweetalert.min.js"></script>
             <script type="text/javascript">
                 function onRoomSelected (url) {
-                    localStorage.setItem("alias", document.getElementById('alias').value);
-                    window.location.href = url;
-                };
+                    swal({
+                        title: 'Your Alias!',
+                        text: 'Let us know who you are, so we can customize your six love expereince. :D',
+                        type: 'input',
+                        showCancelButton: true,
+                        closeOnConfirm: false,
+                        animation: 'slide-from-top',
+                        inputPlaceholder: 'Alias'
+                    }, function(inputValue){
+                        if (inputValue === false) {
+                            return false;
+                        }
+                        if (inputValue === '') {
+                            swal.showInputError('Nice try but we need a name!');
+                            return false;
+                        }
+                        localStorage.setItem('alias', inputValue);
+                        window.location.href = url;
+                    });
+                }
             </script>
         </div>
     </div>

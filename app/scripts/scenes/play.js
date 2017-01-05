@@ -7,6 +7,9 @@
 const play = (PIXI) => {
     this.scene = new PIXI.Container();
 
+    //keeps track of user scores
+    this.scene.scores = [0, 0, 0, 0];
+
     //The title to be displayed on the board.
     var title = new PIXI.Text('Domino Central', { fontFamily: 'Snippet', fontSize: '35px', fill: 'white', align: 'left' });
     title.position.x = (width()/2)-(title.width/2);
@@ -15,45 +18,22 @@ const play = (PIXI) => {
     //Hash map containing textures for the dominos.
     const dominoTextures = {};
 
+    //temp players
     const players = [
-        { alias: 'Test 1' },
-        { alias: 'Test 2' },
-        { alias: 'Test 3' },
+        { alias: 'Lazy Lucy' },
+        { alias: 'Kid-O' },
+        { alias: 'Doubles' },
     ];
-
-
-
-    const showPlayer = (playerName, x, y, angle) => {
-        const name = new PIXI.Text(playerName, { fontFamily: 'Arvo', fontSize: '25px', fontStyle: 'bold', fill: 'black', align: 'center', stroke: 'yellow', strokeThickness: 2 });
-        name.position.x = x - (name.width/2);
-        name.position.y = y;
-        if (angle) {
-           name.rotation += angle;
-           name.position.y = y - (name.width/2);
-        } 
-        this.scene.addChild(name);
-    };
-
-    const left = () => {
-        showPlayer(players[0].alias, 90, (height()/2), 1.565);
-    };
-
-    const right = () => {
-        showPlayer(players[1].alias, width()-20, (height()/2), -1.565);
-    };
-
-    const top = () => {
-        showPlayer(players[2].alias, width()/2, 10);
-    };
 
     //List of possible dominos.
     const dominos = [
         '0-0', '0-1', '0-2', '0-3', '0-4', '0-5', '0-6', '1-0', '1-1', '1-2', '1-3', '1-4', '1-5', '1-6', '2-0', '2-1', '2-2', '2-3', '2-4', '2-5', '2-6', '3-0', '3-1', '3-2', '3-3', '3-4', '3-5', '3-6', '4-0', '4-1', '4-2', '4-3', '4-4', '4-5', '4-6', '5-0', '5-1', '5-2', '5-3', '5-4', '5-5', '5-6', '6-0', '6-1', '6-2', '6-3', '6-4', '6-5', '6-6'
     ];
 
+    //Smaller list that the hands will be drawn from
     let dominoToDrawFrom = [
-            '0-0', '0-1', '0-2', '0-3', '0-4', '0-5', '0-6', '1-1', '1-2', '1-3', '1-4', '1-5', '1-6', '2-2', '2-3', '2-4', '2-5', '2-6', '3-3', '3-4', '3-5', '3-6', '4-4', '4-5', '4-6', '5-5', '5-6', '6-6'
-        ];
+        '0-0', '0-1', '0-2', '0-3', '0-4', '0-5', '0-6', '1-1', '1-2', '1-3', '1-4', '1-5', '1-6', '2-2', '2-3', '2-4', '2-5', '2-6', '3-3', '3-4', '3-5', '3-6', '4-4', '4-5', '4-6', '5-5', '5-6', '6-6'
+    ];
 
     //The playing area that the dominos can be played on.
     this.scene.playingArea = [100, 100, (width()-100), (height()-130)];
@@ -64,6 +44,47 @@ const play = (PIXI) => {
     });
     //texture for the back of the domino.
     const backTexture = PIXI.Texture.fromImage('assets/dominos/back.png');
+
+    /**
+     * Shows a player's name on the board
+     * @param  {String} playerName - The players name
+     * @param  {Integer} loc - The players location on the board
+     * @param  {Integer} x - The x coordinate for the name
+     * @param  {Integer} y - The y coordinate for the name
+     * @param  {Float} angle - The angle the name should be rotated to
+     */
+    const showPlayer = (playerName, loc, x, y, angle) => {
+        const name = new PIXI.Text(`${playerName} (${this.scene.scores[loc]})`, { fontFamily: 'Arvo', fontSize: '25px', fontStyle: 'bold', fill: 'black', align: 'center', stroke: 'yellow', strokeThickness: 2 });
+        name.position.x = x - (name.width/2);
+        name.position.y = y;
+        if (angle) {
+           name.rotation += angle;
+           name.position.y = y - (name.width/2);
+        } 
+        name.playerName = true;
+        this.scene.addChild(name);
+    };
+
+    /**
+     * Creates the player's name who is on the left side of the game area
+     */
+    const left = () => {
+        showPlayer(players[0].alias, Player.LEFT, 130, (height()/2), 1.565);
+    };
+
+    /**
+     * Creates the player's name who is on the right side of the game area
+     */
+    const right = () => {
+        showPlayer(players[1].alias, Player.RIGHT, width()-20, (height()/2)+100, -1.565);
+    };
+
+    /**
+     * Creates the player's name who is on the top side of the game area
+     */
+    const top = () => {
+        showPlayer(players[2].alias, Player.TOP, width()/2, 10);
+    };
 
     /**
      * Rests the list of domino
@@ -79,7 +100,7 @@ const play = (PIXI) => {
     scene.resetBoard = () => {
         for (let i = this.scene.children.length-1; i>=0; i--) {
             const child = this.scene.children[i];
-            if (child.onBoard) {
+            if (child.onBoard || child.playerName || child.mainPlayerName) {
                 this.scene.removeChild(child);
             }
         }
@@ -178,12 +199,57 @@ const play = (PIXI) => {
         });
     };
     /**
+     * Shows the fornt face of the players domino.
+     * @param {Array} hand - The domino in the player's hand.
+     * @param {Integer} hand - The starting x point to place the domino.
+     * @param {Integer} hand - The starting y point to place the domino.
+     * @param {Double} angle - The angle to place the domino.
+     */
+    const showEnemyDominos = (hand, x, y, angle) => {
+        if (!x) {
+            x = (width()/2)-((65*hand.length)/2);
+        }
+        if (!y) {
+            y = (height()/2)-((65*hand.length)/2);
+        }
+        if (angle) {
+            if (Math.abs(x-0) < Math.abs(x-width())) {
+                x -= 30;
+            } else {
+                x += 30;
+            }
+        } else {
+            y -= 30;
+        }
+        let xStart = x;
+        let yStart = y;
+
+        hand.forEach((domino) => {
+            const sprite = new PIXI.Sprite(dominoTextures[domino]);
+            sprite.inHand = true;
+            sprite.domino = domino;
+            sprite.height = 100;
+            sprite.width = 60;
+            sprite.position.x = angle ? x : xStart;
+            sprite.position.y = angle ? yStart : y;
+            sprite.anchor.x = 0.5;
+            sprite.anchor.y = 0.5;
+            if (angle) {
+               sprite.rotation += angle;
+            }
+            this.scene.addChild(sprite);
+            xStart+=65;
+            yStart+=65;
+        });
+    };
+
+    /**
      * Updates the hands of the users on the board.
      */
     const updateHands = () => {
         for (let i = this.scene.children.length-1; i>=0; i--) {
             const child = this.scene.children[i];
-            if (child.inHand) {
+            if (child.inHand || child.playerName) {
                 this.scene.removeChild(child);
             }
         }
@@ -293,11 +359,10 @@ const play = (PIXI) => {
      * @param {String} userAlias - The user's alias.
      */
     scene.renderPlayers = (userAlias) => {
-
-        const aliasText = new PIXI.Text(`User: ${userAlias}`, { fontFamily: 'Snippet', fontSize: '25px', fill: 'white', align: 'left' });
-
-        aliasText.position.x = width()-160;
+        const aliasText = new PIXI.Text(`${userAlias} (${this.scene.scores[Player.BOTTOM]})`, { fontFamily: 'Snippet', fontSize: '25px', fill: 'white', align: 'left' });
+        aliasText.position.x = width()-290;
         aliasText.position.y = height()-30;
+        aliasText.mainPlayerName = true;
         this.scene.addChild(aliasText);
 
         const hand = draw();
@@ -318,21 +383,6 @@ const play = (PIXI) => {
         left();
         right();
         top();
-    };
-
-    /**
-     * Renders the  pass text on the screen that the user can click on to pass.
-     */
-    scene.renderPassText = () => {
-        const text = new PIXI.Text('PASS  ', { fontFamily: 'Arvo', fontSize: '60px', fontStyle: 'bold italic', fill: '#3e1707', align: 'center', stroke: '#a4410e', strokeThickness: 7 });
-        text.position.x = width() - (80);
-        text.position.y = height() - (text.height+20);
-        text.anchor.x = 0.5;
-        text.interactive = true;
-        text.click = () => {
-            turnManager.userPlay({match: -1, domino: null});
-        };
-        this.scene.addChild(text);
     };
 
     /**
@@ -383,6 +433,22 @@ const play = (PIXI) => {
             }
         }
         this.scene.endPoints = obj;
+    };
+
+    /**
+     * Show the hands of the players after a draw.
+     */
+    scene.showHands = () => {
+        for (let i = this.scene.children.length-1; i>=0; i--) {
+            const child = this.scene.children[i];
+            if (child.inHand || child.playerName || child.mainPlayerName) {
+                this.scene.removeChild(child);
+            }
+        }
+        showDominos(this.scene.player.hand);
+        showEnemyDominos(this.scene.topPlayer.hand, null, 80);
+        showEnemyDominos(this.scene.leftPlayer.hand, 90, null, 1.565);
+        showEnemyDominos(this.scene.rightPlayer.hand, width()-100, null, 1.565);
     };
 
     //adds the elements to the scene

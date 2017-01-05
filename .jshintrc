@@ -26,6 +26,7 @@
     "room": true,
     "play": true,
     "Player": true,
-    "restartGame": true
+    "restartGame": true,
+    "swal": true
   }
 }

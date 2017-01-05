@@ -1,11 +1,7 @@
 'use strict';
 
 toastr.options.timeOut = 1000;
-toastr.options.onclick = function(event) { 
-    if (event.currentTarget.innerText.includes('. Click here to play again.')) {
-        restartGame();
-    }
-};
+
 const renderer = PIXI.autoDetectRenderer(width(), height(), {backgroundColor : 0x21751C});
 document.body.appendChild(renderer.view);
 renderer.backgroundColor = 0x21751C;
@@ -54,7 +50,6 @@ const updateRender = () =>{
 const showScene = () => {
     scenePlay.visible = false;
     scenePlay.renderPlayers(userAlias);
-    scenePlay.renderPassText();
     scenePlay.visible = true;
     turnManager.playScene = scenePlay;
     turnManager.updateRender = updateRender;
@@ -69,6 +64,32 @@ const restartGame = () => {
     scenePlay.resetDomino();
     scenePlay.resetBoard();
     showScene();
+};
+
+/**
+ * Handles the ending of the game
+ * @param  {Array} standings - Array of objects containing the standings
+ */
+const handleGameOver = (standings) => {
+    standings.sort(function(a, b){return b.score-a.score;});
+    let losers = '<ul>';
+    for (let i = 1; i < 4; i++) {
+        if (standings[i].score === 0) {
+            losers += `<li>${standings[i].info.name}</li>`;
+        }
+    }
+    losers += '</ul>';
+    let message = `The winner with a score of ${standings[0].score} is <b>${standings[0].info.name}</b>. And the following were put to shame: `;
+    if (standings[0].score > 0 && standings[1].score > 0 && standings[2].score > 0&& standings[3].score > 0){
+       message = 'The game has ended in a draw :('; 
+    }
+    swal({
+        title: 'Game Over',
+        text: message,
+        html: true
+    }, function () {
+        window.location.href = 'http://localhost:9000/';
+    });
 };
 
 // Load them google fonts before starting...!

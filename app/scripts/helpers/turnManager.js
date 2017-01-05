@@ -30,6 +30,58 @@ const getMatchedDomino = (parts, value) => {
     return domino;
 };
 
+/**
+ * Builds the standings to show at the end of the game
+ * @param  {Array} standings - The user standings
+ */
+const buildStanding = (standings) => {
+    standings.sort(function(a, b){return b.score-a.score;});
+    let standing = '<ul style="list-style-type: none;">';
+    if (standings[0] > standings[1]) {
+        standing += `<li>1. ${standings[0].info.name} - ${standings[0].score}</li>`;
+        if (standings[1] > standings[2]) {
+            standing += `<li>2. ${standings[1].info.name} - ${standings[1].score}</li>`;
+            if (standings[2] > standings[3]) {
+                standing += `<li>3. ${standings[2].info.name} - ${standings[2].score}</li>`;
+                standing += `<li>4. ${standings[3].info.name} - ${standings[3].score}</li>`;
+            } else {
+                standing += `<li>3. ${standings[2].info.name} - ${standings[2].score}</li>`;
+                standing += `<li>3. ${standings[3].info.name} - ${standings[3].score}</li>`;
+            }
+        } else if (standings[1] > standings[3]) {
+            standing += `<li>2. ${standings[1].info.name} - ${standings[1].score}</li>`;
+            standing += `<li>2. ${standings[2].info.name} - ${standings[2].score}</li>`;
+            standing += `<li>3. ${standings[3].info.name} - ${standings[3].score}</li>`;
+        } else {
+            standing += `<li>2. ${standings[1].info.name} - ${standings[1].score}</li>`;
+            standing += `<li>2. ${standings[2].info.name} - ${standings[2].score}</li>`;
+            standing += `<li>2. ${standings[3].info.name} - ${standings[3].score}</li>`;
+        }
+    } else if (standings[0] > standings[2]) {
+        standing += `<li>1. ${standings[0].info.name} - ${standings[0].score}</li>`;
+        standing += `<li>1. ${standings[1].info.name} - ${standings[1].score}</li>`;
+        if (standings[2] > standings[3]) {
+            standing += `<li>2. ${standings[2].info.name} - ${standings[2].score}</li>`;
+            standing += `<li>3. ${standings[3].info.name} - ${standings[3].score}</li>`;
+        } else {
+            standing += `<li>2. ${standings[2].info.name} - ${standings[2].score}</li>`;
+            standing += `<li>2. ${standings[3].info.name} - ${standings[3].score}</li>`;
+        }
+    } else if (standings[0] > standings[3]) {
+        standing += `<li>1. ${standings[0].info.name} - ${standings[0].score}</li>`;
+        standing += `<li>1. ${standings[1].info.name} - ${standings[1].score}</li>`;
+        standing += `<li>1. ${standings[2].info.name} - ${standings[2].score}</li>`;
+        standing += `<li>2. ${standings[3].info.name} - ${standings[3].score}</li>`;
+    } else {
+        standing += `<li>1. ${standings[0].info.name} - ${standings[0].score}</li>`;
+        standing += `<li>1. ${standings[1].info.name} - ${standings[1].score}</li>`;
+        standing += `<li>1. ${standings[2].info.name} - ${standings[2].score}</li>`;
+        standing += `<li>1. ${standings[3].info.name} - ${standings[3].score}</li>`;
+    }
+    standing += '</ul>';
+    return standing;
+};
+
 //keeps track of options
 let globalOptions = {};
 //keeps track of the current user's turn
@@ -60,7 +112,7 @@ const turnManager = {
         const rightPlayerHand = this.playScene.rightPlayer.hand;
         for (let i = 0; i < rightPlayerHand.length; i++) {
             if (rightPlayerHand[i] === '6-6') {
-                leftPlayerHand.splice(i, 1);
+                rightPlayerHand.splice(i, 1);
                 player = Player.TOP;
                 break;
             }
@@ -75,7 +127,7 @@ const turnManager = {
         }
         this.playScene.putDominoOnBoard('6-6', width()/2,(height()/2 - 35), null, {pose: true});
         this.playScene.updateHands();
-        this.next(player, { choices: ['6', '6'], passCount: 0, lastPlayed: ['6-6','6-6'], pose: true});
+        this.next(player, { choices: ['6', '6'], passCount: 0, lastPlayed: ['6-6','6-6'], poseLeft: true, poseRight: true});
     },
 
     /**
@@ -129,11 +181,17 @@ const turnManager = {
                 playerInfo = this.playScene.player;
                 break;
         }
-        if (player !== Player.BOTTOM) {
+        if (player !== Player.BOTTOM || true) {
            setTimeout(() => {
                 const play = ai.playDomino(hand, options.choices);
+                if (play.domino === '6-6') {
+                    return;
+                }
                 this.handlePlay(play, hand, playerInfo, nextPlayer, options);
-            }, 1000); 
+            }, 100); 
+       } else if (ai.playDomino(hand, options.choices).match === -1) {
+            const play = ai.playDomino(hand, options.choices);
+            this.handlePlay(play, hand, playerInfo, nextPlayer, options);
        }
     },
 
@@ -146,9 +204,15 @@ const turnManager = {
      * @param {Object} options - Additional options to be passed to the function.
      */
     handlePlay (play, hand, playerInfo, nextPlayer, options) {
-        const pose = options.pose;
+        const poseLeft = options.poseLeft;
+        const poseRight = options.poseRight;
         if (play.match !== -1) {
-            options.pose = false;
+            if (poseLeft && play.side === BoardSides.LEFT){
+                options.poseLeft = false;
+            }
+            if (poseRight && play.side === BoardSides.Right){
+                options.poseRight = false;
+            }
             options.passCount = 0;
             hand.splice(play.idx, 1);
             let angle = 1.565;
@@ -168,7 +232,7 @@ const turnManager = {
                     x-=dominoWidth;
                 }
             }
-            if (!pose && play.side === BoardSides.LEFT && isDouble(options.lastPlayed[play.side])) {
+            if (!poseLeft && play.side === BoardSides.LEFT && isDouble(options.lastPlayed[play.side])) {
                 x+=dominoWidth;
                 y+=dominoHeight/4;
             }
@@ -249,6 +313,10 @@ const turnManager = {
                             if (isDouble(options.lastPlayed[play.side])) {
                                 x = loc.x-dominoWidth;
                             }
+                        } else {
+                            if (isDouble(options.lastPlayed[play.side])) {
+                                x -= dominoHeight;
+                            }
                         }
                     }
                 }
@@ -258,12 +326,43 @@ const turnManager = {
             this.playScene.updateHands();
             this.updateRender();
             if (hand.length === 0) {
-                const win = toastr.success(`${playerInfo.name} wins the game. Click here to play again.`, 'Game Over', {timeOut: 0});
+                let winner;
+                switch (nextPlayer) {
+                    case Player.RIGHT:
+                        winner = Player.BOTTOM;
+                        break;
+                    case Player.TOP:
+                        winner = Player.RIGHT;
+                        break;
+                    case Player.LEFT:
+                        winner = Player.TOP;
+                        break;
+                    case Player.BOTTOM:
+                        winner = Player.LEFT;
+                        break;
+                }
+                this.playScene.scores[winner]++;
+                const currentStandings = JSON.parse(JSON.stringify(this.playScene.scores));
+                currentStandings[Player.RIGHT] = {score: currentStandings[Player.RIGHT], info: this.playScene.rightPlayer};
+                currentStandings[Player.TOP] = {score: currentStandings[Player.TOP], info: this.playScene.topPlayer};
+                currentStandings[Player.LEFT] = {score: currentStandings[Player.LEFT], info: this.playScene.leftPlayer};
+                currentStandings[Player.BOTTOM] = {score: currentStandings[Player.BOTTOM], info: this.playScene.player};
+                if (this.playScene.scores[winner] === 6 || (this.playScene.scores[0] > 0 && this.playScene.scores[1] > 0 && this.playScene.scores[2] > 0&& this.playScene.scores[3] > 0) ) {
+                    handleGameOver(currentStandings);
+                } else {
+                    swal({
+                        title: `Round Complete. ${playerInfo.name} wins the game`,
+                        text: `The next round will start soon. The current standing is: ${buildStanding(currentStandings)}`,
+                        timer: 5000,
+                        showConfirmButton: false,
+                        html: true
+                    });
+                    setTimeout(function() { restartGame();}, 7000); 
+                }
                 return;
             }
         } else {
-            if (options.passCount === 4){
-                toastr.error('All player has passed. The player with the lowest total domino value wins.', 'Game Over', {timeOut: 0});
+            if (options.passCount === 3){
                 const right = this.playScene.rightPlayer;
                 right.value = getHandCount(right.hand);
                 const left = this.playScene.leftPlayer;
@@ -272,12 +371,45 @@ const turnManager = {
                 top.value = getHandCount(top.hand);
                 const bottom = this.playScene.player;
                 bottom.value = getHandCount(bottom.hand);
-                var order = [{loc: 'right', value: right}, {loc: 'left', value: left}, {loc: 'top', value: top}, {loc: 'bottom', value: bottom}];
+                const order = [{loc: 'right', value: right}, {loc: 'left', value: left}, {loc: 'top', value: top}, {loc: 'bottom', value: bottom}];
                 order.sort(function(a, b){return a.value.value-b.value.value;});
-                const win = toastr.success(`The winning player is: ${order[0].value.name} with a score of ${order[0].value.value}. Click here to play again.`, 'Game Over', {timeOut: 0});
+                let winner;
+                switch (order[0].loc) {
+                    case 'bottom':
+                        winner = Player.BOTTOM;
+                        break;
+                    case 'right':
+                        winner = Player.RIGHT;
+                        break;
+                    case 'top':
+                        winner = Player.TOP;
+                        break;
+                    case 'left':
+                        winner = Player.LEFT;
+                        break;
+                }
+                this.playScene.scores[winner]++;
+                const currentStandings = JSON.parse(JSON.stringify(this.playScene.scores));
+                currentStandings[Player.RIGHT] = {score: currentStandings[Player.RIGHT], info: this.playScene.rightPlayer};
+                currentStandings[Player.TOP] = {score: currentStandings[Player.TOP], info: this.playScene.topPlayer};
+                currentStandings[Player.LEFT] = {score: currentStandings[Player.LEFT], info: this.playScene.leftPlayer};
+                currentStandings[Player.BOTTOM] = {score: currentStandings[Player.BOTTOM], info: this.playScene.player};
+                if (this.playScene.scores[winner] === 6 || (this.playScene.scores[0] > 0 && this.playScene.scores[1] > 0 && this.playScene.scores[2] > 0&& this.playScene.scores[3] > 0) ) {
+                    handleGameOver(currentStandings);
+                } else {
+                    swal({
+                        title: `Round Complete. ${order[0].value.name} won with a score of ${order[0].value.value}`,
+                        text: `The next round will start soon. The current standing is: ${buildStanding(currentStandings)}`,
+                        timer: 5000,
+                        showConfirmButton: false,
+                        html: true
+                    });
+                    setTimeout(function() { restartGame();}, 7000); 
+                }
+                this.playScene.showHands();
                 return;
             } else {
-               options.passCount++;
+                options.passCount++;
                 toastr.warning(`${playerInfo.name} passes.`); 
             }
         }
