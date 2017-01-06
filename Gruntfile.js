@@ -37,16 +37,6 @@ module.exports = function (grunt) {
         files: ['bower.json'],
         tasks: ['wiredep']
       },
-      // templateApp: {
-      //   files: [
-      //     'app/scripts/app.js.tpl',
-      //     '.env.json'
-      //   ],
-      //   tasks: ['templateApp:development'],
-      //   options: {
-      //     livereload: '<%= connect.options.livereload %>'
-      //   }
-      // },
       js: {
         files: ['app/scripts/{,*/}*.js'],
         tasks: ['newer:jshint:all', 'newer:jscs:all'],
@@ -281,7 +271,7 @@ module.exports = function (grunt) {
     // concat, minify and revision files. Creates configurations in memory so
     // additional tasks can operate on them
     useminPrepare: {
-      html: '<%= yeoman.app %>/index.html',
+      src: ['<%= yeoman.app %>/index.html', '<%= yeoman.app %>/play.html'],
       options: {
         dest: '<%= yeoman.dist %>',
         flow: {
@@ -312,32 +302,6 @@ module.exports = function (grunt) {
         }
       }
     },
-
-    // The following *-min tasks will produce minified files in the dist folder
-    // By default, your `index.html`'s <!-- Usemin block --> will take care of
-    // minification. These next options are pre-configured if you do not wish
-    // to use the Usemin blocks.
-    // cssmin: {
-    //   dist: {
-    //     files: {
-    //       '<%= yeoman.dist %>/styles/main.css': [
-    //         '.tmp/styles/{,*/}*.css'
-    //       ]
-    //     }
-    //   }
-    // },
-    // uglify: {
-    //   dist: {
-    //     files: {
-    //       '<%= yeoman.dist %>/scripts/scripts.js': [
-    //         '<%= yeoman.dist %>/scripts/scripts.js'
-    //       ]
-    //     }
-    //   }
-    // },
-    // concat: {
-    //   dist: {}
-    // },
 
     imagemin: {
       dist: {
@@ -466,16 +430,6 @@ module.exports = function (grunt) {
       }
     }
   });
-
-  grunt.registerTask('templateApp', 'Compile our env dependant constants into our app.', function (target) {
-    var env = grunt.file.readJSON('.env.json')[target];
-    grunt.file.copy('app/scripts/app.js.tpl', '.tmp/scripts/app.js', {
-      process: function (contents) {
-        return grunt.template.process(contents, {data: env});
-      }
-    });
-  });
-
 
   grunt.registerTask('serve', 'Compile then start a connect web server', function (target) {
     if (target === 'dist') {

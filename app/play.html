@@ -1,18 +1,25 @@
 <head>
     <meta charset="utf-8">
     <title>Play domino</title> 
+    <!-- build:css(.) styles/play.css -->
+    <!-- bower:css -->
     <link href="bower_components/toastr/toastr.min.css" rel="stylesheet"/>
     <link href="bower_components/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet"/>
     <link href="bower_components/sweetalert/dist/sweetalert.css" rel="stylesheet">
+    <!-- endbower -->
+    <!-- endbuild -->
     <link href="styles/main.css" rel="stylesheet"/>
 </head>
 <body>
+    <!-- build:js js/vendorplay.js -->
     <script type="text/javascript" src="bower_components/pixi.js/bin/pixi.js"></script>
     <script type="text/javascript" src="bower_components/jquery/dist/jquery.min.js"></script>
     <script type="text/javascript" src="bower_components/toastr/toastr.min.js"></script>
     <script type="text/javascript" src="bower_components/lodash/dist/lodash.min.js"></script>
     <script type="text/javascript" src="bower_components/sweetalert/dist/sweetalert.min.js"></script>
+    <!-- endbuild -->
 
+    <!-- build:js js/app.js -->
     <!-- Helpers -->
     <script type="text/javascript" src="scripts/helpers/helper.js"></script>
     <script type="text/javascript" src="scripts/helpers/ai.js"></script>
@@ -23,4 +30,5 @@
 
     <!-- Main loader -->
     <script type="text/javascript" src="scripts/app.js"></script>
+    <!-- endbuild -->
 </body>

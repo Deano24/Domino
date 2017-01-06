@@ -1,9 +1,12 @@
 <head>
     <meta charset="utf-8">
     <title>Play domino</title> 
-    <link href="bower_components/toastr/toastr.min.css" rel="stylesheet"/>
-    <link href="bower_components/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet"/>
-    <link href="bower_components/sweetalert/dist/sweetalert.css" rel="stylesheet">
+    <!-- build:css(.) styles/main.css -->
+    <!-- bower:css -->
+    <link rel="stylesheet" href="bower_components/toastr/toastr.css" />
+    <link rel="stylesheet" href="bower_components/sweetalert/dist/sweetalert.css" />
+    <!-- endbower -->
+    <!-- endbuild -->
     <link href="styles/main.css" rel="stylesheet"/>
 </head>
 <body>
@@ -42,7 +45,9 @@
             <div class="news col-md-offset-1 col-md-3 col-xs-12 rounded">
                 <h1 class="rowtitle"><span class="ep1">News</span></h1>
             </div>
+            <!-- build:js(.) scripts/vendor.js -->
             <script type="text/javascript" src="bower_components/sweetalert/dist/sweetalert.min.js"></script>
+            <!-- endbuild -->
             <script type="text/javascript">
                 function onRoomSelected (url) {
                     swal({
