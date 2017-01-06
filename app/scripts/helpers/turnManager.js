@@ -250,34 +250,69 @@ const turnManager = {
                         domino = getMatchedDomino(parts, play.match);
                         y -= dominoHeight;
                         if (isDouble(domino)) {
-                            x+=30;
-                            y+=15;
-                            options.incrementY = 15;
+                            x+=dominoWidth;
+                            y+=dominoWidth/2;
+                            options.incrementY = dominoWidth/2;
                         }
                         if (isDouble(options.lastPlayed[play.side])) {
-                            y-=15;
+                            y -= dominoWidth/2;
                         }
+                        options.leftTurned = 1;
                     }
-                } else if (options.turnedUp) {
-                    angle = null;
+                } else {
                     x = loc.x+dominoWidth;
                     if (isDouble(domino)) {
-                        y+=15;
+                        angle = 1.565;
+                        y += dominoWidth*1.7;
+                        x += dominoWidth*1.6;
+                    } else {
+                        angle = null;
                     }
                     domino = getMatchedDomino(parts, play.match);
                     y -= dominoHeight;
                     if (isDouble(options.lastPlayed[play.side])) {
-                        y-=15;
+                        y -= dominoWidth/2;
+                        x -= dominoWidth/3;
+                        if (options.leftTurned === 1) {
+                            x += dominoWidth/3;
+                        }
                     }
-                    if (y < this.playScene.playingArea[1]) {
+                    options.leftTurned++;
+                    let checkY = y;
+                    if (isDouble(domino) && options.completeTurnLeft) checkY -= dominoHeight;
+                    if (checkY < this.playScene.playingArea[1]) {
                         angle = 1.565;
                         y = loc.y;
                         x = loc.x+(dominoHeight*2);
+                        if (isDouble(options.lastPlayed[play.side])) {
+                            x -= dominoWidth/5;
+                            y += dominoWidth/2;
+                            if (options.justCompleteTurn) {
+                                y -= dominoWidth/2;
+                                x += dominoWidth/5;
+                            }
+                        }
+                        if (!options.completeTurnLeft) {
+                            options.completeTurnLeft = true;
+                            options.justCompleteTurn = true;
+                            x -= 5;
+                            if (isDouble(options.lastPlayed[play.side])) {
+                                x += dominoWidth/3;
+                                y -= dominoWidth/2;
+                            }
+                        } else {
+                            options.justCompleteTurn = false;
+                            if (isDouble(domino)) {
+                                x -= dominoHeight;
+                                y -= (dominoWidth/2);
+                                angle = null;
+                            }
+                        }
                     }
                 }
             } else if (play.side === BoardSides.RIGHT) {
                 if (isDouble(options.lastPlayed[play.side]) && options.lastPlayed[play.side] !== '6-6') {
-                    y+=15;
+                    y += 15;
                 }
                 const parts = domino.split('-');
                 if (!options.turnedDown) {
@@ -285,10 +320,10 @@ const turnManager = {
                         options.turnedDown = true;
                         angle = null;
                         domino = getMatchedDomino(parts, play.match).split('-').reverse().join('-');
-                        x-=dominoHeight;
+                        x -= dominoHeight;
                         if (isDouble(options.lastPlayed[play.side])) {
-                            y+=dominoHeight;
-                            x-=dominoWidth;
+                            y += dominoHeight*.80;
+                            x -= dominoWidth;
                         }
                     }
                 } else if (options.turnedDown) {
@@ -297,26 +332,42 @@ const turnManager = {
                     x = loc.x;
                     domino = getMatchedDomino(parts, play.match).split('-').reverse().join('-');
                     if (isDouble(domino)) {
-                        y+=15;
+                        y += 15;
+                        x += dominoWidth*1.6;
+                        angle = 1.565;
                     }
                     if (isDouble(options.lastPlayed[play.side])) {
-                        x-=dominoWidth;
+                        y -= dominoWidth*1.7;
+                        x -= dominoWidth*3.75;
                     }
-                    if (y+dominoHeight > this.playScene.playingArea[3]) {
+                    let checkY = y;
+                    if (isDouble(options.lastPlayed[play.side]) && options.completeTurnRight) checkY += dominoHeight;
+                    if (checkY > this.playScene.playingArea[3]) {
                         angle = 1.565;
                         y = loc.y;
                         x = loc.x-dominoHeight;
-                        if (!options.completeTurn) {
-                            options.completeTurn = true;
+                        if (!options.completeTurnRight) {
+                            options.completeTurnRight = true;
+                            options.justTurnRight = true;
                             y = loc.y+dominoWidth;
                             x = loc.x;
                             if (isDouble(options.lastPlayed[play.side])) {
-                                x = loc.x-dominoWidth;
+                                y -= dominoWidth;
+                                x -= dominoHeight*2;
                             }
                         } else {
-                            if (isDouble(options.lastPlayed[play.side])) {
-                                x -= dominoHeight;
+                            if (isDouble(domino)) {
+                                angle = null;
+                                y -= dominoWidth/2;
+                                x -= dominoWidth;
                             }
+                            if (isDouble(options.lastPlayed[play.side]) && options.justTurnRight) {
+                                x -= dominoHeight;
+                            } else if (isDouble(options.lastPlayed[play.side])) {
+                                y += dominoWidth/2;
+                                x += (dominoHeight/2)+3;
+                            }
+                            options.justTurnRight = false;
                         }
                     }
                 }

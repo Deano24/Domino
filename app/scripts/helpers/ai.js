@@ -1,5 +1,33 @@
 'use strict';
 
+//sample play that you can use to simulate a game to find a bug in placement
+const devPlay = [
+    {match: "6", domino: "6-3", idx: "0"},
+    {match: "3", domino: "3-0", idx: "0"},
+    {match: "0", domino: "0-0", idx: "0"},
+    {match: "0", domino: "0-1", idx: "0"},
+    {match: "1", domino: "1-5", idx: "0"},
+    {match: "5", domino: "5-6", idx: "0"},
+    {match: "6", domino: "6-4", idx: "1"},
+    {match: "4", domino: "4-2", idx: "0"},
+    {match: "2", domino: "2-2", idx: "0"},
+    {match: "2", domino: "2-3", idx: "0"},
+    {match: "3", domino: "3-3", idx: "0"},
+    {match: "3", domino: "4-3", idx: "1"},
+    {match: "4", domino: "4-4", idx: "0"},
+    {match: "4", domino: "4-0", idx: "0"},
+    {match: "0", domino: "0-0", idx: "0"},
+    {match: "0", domino: "0-5", idx: "0"},
+    {match: "5", domino: "5-5", idx: "0"},
+    {match: "5", domino: "5-4", idx: "0"},
+    {match: "4", domino: "4-4", idx: "0"},
+    {match: "4", domino: "4-3", idx: "0"},
+    {match: -1, domino: null},
+    {match: -1, domino: null},
+    {match: -1, domino: null},
+    {match: -1, domino: null}
+];
+
 const ai = {
     /**
      * Chooses the domino to play on the board.

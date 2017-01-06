@@ -1,6 +1,6 @@
-# Contest Entry in the Annual DLE Game Tournament
+# Deano24 Domino
 
-A domino game to be entered into the annual DLE game tournament.
+A simple remake of the historical domino game.
 
 ## Getting Started
 
@@ -15,17 +15,31 @@ The following is required to work with the program:
 * Bower
 * Compass
 
+#### Node & NPM
+
 ```
 curl -sL https://deb.nodesource.com/setup_6.x | sudo -E bash -
 apt-get install -y nodejs
 apt-get install -y build-essential
 ```
+
+#### Grunt
+
 ```
 npm -g install grunt
 npm install -g grunt-cli
 ```
+
+#### Bower
+
 ```
 npm install -g bower
+```
+
+#### Compass (Assumes Ruby)
+
+```
+gem install compass
 ```
 
 ### Installing
@@ -35,7 +49,7 @@ A step by step series of examples that tell you have to get a development env ru
 Get a copy of the repo
 
 ```
-git clone --branch master https://github.com/Deano24/Domino.git Domino
+git clone https://deano24@bitbucket.org/deano24/domino.git Domino
 ```
 
 Navigate to project directory
@@ -56,25 +70,27 @@ Install bower libraries
 bower install
 ```
 
-Install Compass (Assume Ruby)
-
-```
-gem install compass
-```
-
 Running the program
 
 ```
 grunt serve
 ```
 
-## Contributing
+### Deploying
 
-As this is a contest entry no contributing is allowed, if however, you wish to continue development yourself, please fork and use as you see fit.
+A step by step guide to creating a deployment ready version.
+
+Build the application
+
+```
+grunt build
+```
+
+And you are done, the files will be found inside the dist folder.
 
 ## Versioning
 
-We use [SemVer](http://semver.org/) for versioning. For the versions available, see the [tags on this repository](https://github.com/Deano24/Domino/tags). 
+We use [SemVer](http://semver.org/) for versioning. For the versions available, see the [tags on this repository](https://bitbucket.org/deano24/domino/tags). 
 
 ## Authors
 
