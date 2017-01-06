@@ -41,7 +41,6 @@ const play = (PIXI) => {
     //loads the texture for each domino.
     dominos.forEach((domino) => {
         dominoTextures[domino] = PIXI.Texture.fromImage(`assets/dominos/${domino}.png`);
-        console.log(dominoTextures[domino]);
     });
     //texture for the back of the domino.
     const backTexture = PIXI.Texture.fromImage('assets/dominos/back.png');

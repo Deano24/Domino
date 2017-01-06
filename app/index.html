@@ -48,7 +48,9 @@
             </div>
             <!-- build:js(.) scripts/vendor.js -->
             <script type="text/javascript" src="bower_components/sweetalert/dist/sweetalert.min.js"></script>
+            <script type="text/javascript" src="bower_components/jquery/dist/jquery.min.js"></script>
             <!-- endbuild -->
+            <script type="text/javascript" src="scripts/services/http.js"></script>
             <script type="text/javascript">
                 function onRoomSelected (url) {
                     swal({
@@ -71,6 +73,19 @@
                         window.location.href = url;
                     });
                 }
+                getFrom('http://localhost:8080/rooms', (err, res) => {
+                    if (!err) {
+                        for (var i = 0; i < res.length; i++) {
+                            const html = '<div class="row col-md-6 col-xs-12">'+
+                                            '<div class="col-md-11 col-xs-11">'+
+                                                '<p class="center"><strong>Kings Haven</strong> Classic Game</p>'+
+                                                '<a class="btn-join col-md-12 col-xs-12 rounded" onclick="onRoomSelected(\'/play.html?room=1234\')">(1/4) Join<span class="glyphicon glyphicon-chevron-right"></span></a>'+
+                                            '</div>'+
+                                        '</div>'
+                        }
+                    }
+                    console.log(res);
+                });
             </script>
         </div>
     </div>

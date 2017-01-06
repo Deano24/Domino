@@ -13,9 +13,6 @@ const height = () => {
  * @return {Integer} The screens width.
  */
 const width = () => {
-    console.log();
-    console.log();
-    console.log();
     return (window.innerWidth || document.documentElement.clientWidth || document.body.clientWidth);
 };
 

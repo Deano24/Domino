@@ -127,7 +127,7 @@ const turnManager = {
         }
         this.playScene.putDominoOnBoard('6-6', width()/2,(height()/2 - 35), null, {pose: true});
         this.playScene.updateHands();
-        this.next(player, { choices: ['6', '6'], passCount: 0, lastPlayed: ['6-6','6-6'], poseLeft: true, poseRight: true});
+        //this.next(player, { choices: ['6', '6'], passCount: 0, lastPlayed: ['6-6','6-6'], poseLeft: true, poseRight: true});
     },
 
     /**

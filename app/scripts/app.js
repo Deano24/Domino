@@ -2,6 +2,16 @@
 
 toastr.options.timeOut = 1000;
 
+var socket = io('http://localhost:8080');
+console.log(socket);
+socket.on('connect', function(){
+    console.log('connected');
+    socket.emit('chat message', {name: 'rohan'});
+});
+socket.on('disconnect', function(){
+    console.log('disconnected');
+});
+
 const renderer = PIXI.autoDetectRenderer(width(), height(), {backgroundColor : 0x21751C});
 document.body.appendChild(renderer.view);
 renderer.backgroundColor = 0x21751C;
