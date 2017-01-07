@@ -27,6 +27,7 @@
     "play": true,
     "Player": true,
     "restartGame": true,
-    "swal": true
+    "swal": true,
+    "io": true
   }
 }

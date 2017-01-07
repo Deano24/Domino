@@ -9,3 +9,5 @@
 /.sass-cache
 npm-debug.log
 testem.log
+
+.env.json

@@ -2,7 +2,7 @@
 
 toastr.options.timeOut = 1000;
 
-var socket = io('http://localhost:8080');
+var socket = io('<%= apiUrl %>');
 console.log(socket);
 socket.on('connect', function(){
     console.log('connected');
