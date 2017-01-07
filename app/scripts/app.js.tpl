@@ -2,16 +2,6 @@
 
 toastr.options.timeOut = 1000;
 
-var socket = io('<%= apiUrl %>');
-console.log(socket);
-socket.on('connect', function(){
-    console.log('connected');
-    socket.emit('chat message', {name: 'rohan'});
-});
-socket.on('disconnect', function(){
-    console.log('disconnected');
-});
-
 const renderer = PIXI.autoDetectRenderer(width(), height(), {backgroundColor : 0x21751C});
 document.body.appendChild(renderer.view);
 renderer.backgroundColor = 0x21751C;
@@ -38,13 +28,24 @@ const Player = {
 };
 
 let scenePlay;
-let userAlias = localStorage.getItem("alias");
+let userAlias = localStorage.getItem('alias');
+function getUrlParameter(sParam) {
+    var val = '';
+    var parts = document.location.search.split('=');
+    console.log(parts);
+    console.log(parts);
+    for (var i = 0; i < parts.length; i++) {
+        if (parts[i] === '?'+sParam || parts[i] === '&'+sParam) {
+            val = parts[i+1];
+            break;
+        }
+    }
+    console.log(val);
+    return val;
+}
 
-const setup = () => {
-    scenePlay = play(PIXI);
-    stage.addChild(scenePlay);
-    showScene();
-}; 
+const room = getUrlParameter('room');
+
 
 /**
  * Re-renders the scene
@@ -63,8 +64,40 @@ const showScene = () => {
     scenePlay.visible = true;
     turnManager.playScene = scenePlay;
     turnManager.updateRender = updateRender;
-    turnManager.start();
     renderer.render(stage);
+};
+const socketSetup = () => {
+    const socket = io('http://localhost:8080');
+    socket.on('connect', () => {
+        socket.emit('playerInfo', {name: userAlias, room: room});
+    });
+    socket.on('setup', (data) => {
+        scenePlay.setSeatNumber(data.seatNo);
+        scenePlay.createPlayers(data.playerList);
+        scenePlay.showPlayers();
+    });
+    socket.on('start', () => {
+        console.log('start');
+        //setup();
+    });
+    socket.on('playerJoined', (info) => {
+        scenePlay.addPlayers({name: info.name, seat: info.seatNo});
+        scenePlay.showPlayers();
+    });
+    socket.on('hand', (obj) => {
+        console.log('hand');
+        console.log(obj);
+    });
+    socket.on('disconnect', () => {
+        console.log('disconnected');
+    });
+};
+
+const setup = () => {
+    scenePlay = play(PIXI);
+    stage.addChild(scenePlay);
+    showScene();
+    socketSetup();
 };
 
 /**

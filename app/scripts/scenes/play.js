@@ -18,12 +18,8 @@ const play = (PIXI) => {
     //Hash map containing textures for the dominos.
     const dominoTextures = {};
 
-    //temp players
-    const players = [
-        { alias: 'Lazy Lucy' },
-        { alias: 'Kid-O' },
-        { alias: 'Doubles' },
-    ];
+    //players
+    const players = {};
 
     //List of possible dominos.
     const dominos = [
@@ -69,21 +65,69 @@ const play = (PIXI) => {
      * Creates the player's name who is on the left side of the game area
      */
     const left = () => {
-        showPlayer(players[0].alias, Player.LEFT, 130, (height()/2), 1.565);
+        if (!players[Player.LEFT]) {
+            return;
+        }
+        showPlayer(players[Player.LEFT].alias, Player.LEFT, 130, (height()/2), 1.565);
     };
 
     /**
      * Creates the player's name who is on the right side of the game area
      */
     const right = () => {
-        showPlayer(players[1].alias, Player.RIGHT, width()-20, (height()/2)+100, -1.565);
+        if (!players[Player.RIGHT]) {
+            return;
+        }
+        showPlayer(players[Player.RIGHT].alias, Player.RIGHT, width()-20, (height()/2)+100, -1.565);
     };
 
     /**
      * Creates the player's name who is on the top side of the game area
      */
     const top = () => {
-        showPlayer(players[2].alias, Player.TOP, width()/2, 10);
+        if (!players[Player.TOP]) {
+            return;
+        }
+        showPlayer(players[Player.TOP].alias, Player.TOP, width()/2, 10);
+    };
+
+    scene.createPlayers = (tmp) => {
+        if (tmp.length === 1) {
+            players[Player.LEFT] = {alias: tmp[0].name};
+        } else if (tmp.length === 2) {
+            players[Player.LEFT] = {alias: tmp[0].name};
+            players[Player.TOP] = {alias: tmp[1].name};
+        } else if (tmp.length === 3) {
+            players[Player.LEFT] = {alias: tmp[0].name};
+            players[Player.TOP] = {alias: tmp[1].name};
+            players[Player.RIGHT] = {alias: tmp[2].name};
+        }
+    };
+
+    scene.showPlayers = () => {
+        for (let i = this.scene.children.length-1; i>=0; i--) {
+            const child = this.scene.children[i];
+            if ( child.playerName ) {
+                this.scene.removeChild(child);
+            }
+        }
+        right();
+        left();
+        top();
+    };
+
+    scene.addPlayers = (player) => {
+        if (Object.keys(players).length === 0) {
+            players[Player.RIGHT] = {alias: player.name};
+        } else if (Object.keys(players).length === 1) {
+            players[Player.TOP] = {alias: player.name};
+        } else if (Object.keys(players).length === 2) {
+            players[Player.LEFT] = {alias: player.name};
+        }
+    };
+
+    scene.setSeatNumber = (seatNo) => {
+        this.seatNo = seatNo;
     };
 
     /**
@@ -364,25 +408,6 @@ const play = (PIXI) => {
         aliasText.position.y = height()-30;
         aliasText.mainPlayerName = true;
         this.scene.addChild(aliasText);
-
-        const hand = draw();
-        this.scene.player = {hand: hand, name: userAlias};
-        showDominos(hand);
-
-        const leftHand = draw();
-        this.scene.leftPlayer = {hand: leftHand, name: players[0].alias};
-        const rightHand = draw();
-        this.scene.rightPlayer = {hand: rightHand, name: players[1].alias};
-        const topHand = draw();
-        this.scene.topPlayer = {hand: topHand, name: players[2].alias};
-
-        showDominowBack(topHand, null, 80);
-        showDominowBack(leftHand, 90, null, 1.565);
-        showDominowBack(rightHand, width()-100, null, 1.565);
-
-        left();
-        right();
-        top();
     };
 
     /**

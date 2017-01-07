@@ -57,7 +57,7 @@
             });
         }
         function getRooms () {
-            getFrom('<%= apiUrl %>rooms', (err, res) => {
+            getFrom('<%= apiUrl %>/rooms', (err, res) => {
                 if (!err) {
                     for (var i = 0; i < res.rooms.length; i++) {
                         $('<div class="row col-md-6 col-xs-12">'+
@@ -68,7 +68,6 @@
                         '</div>').appendTo('#roomList');
                     }
                 }
-                console.log(res.rooms);
             });
         }
         getRooms();
@@ -87,7 +86,7 @@
             }
             var password = $('#roomPassword').val();
             password = password === '' ? null : password;
-            postTo('<%= apiUrl %>rooms', {title: name, password: password}, function(err, res) {
+            postTo('<%= apiUrl %>/rooms', {title: name, password: password}, function(err, res) {
                 formReset();
                 $('.room-create-modal').modal('hide');
                 if (err) {
