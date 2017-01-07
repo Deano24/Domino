@@ -13,3 +13,4 @@ testem.log
 .env.json
 
 /app/scripts/app.js
+/app/index.html
