@@ -11,3 +11,5 @@ npm-debug.log
 testem.log
 
 .env.json
+
+/app/scripts/app.js

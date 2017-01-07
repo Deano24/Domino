@@ -7,6 +7,8 @@
 // use this if you want to recursively match all subfolders:
 // 'test/spec/**/*.js'
 
+var fs = require('fs');
+var env = JSON.parse(fs.readFileSync('./.env.json'));
 module.exports = function (grunt) {
 
   // Time how long tasks take. Can help when optimizing build times
@@ -40,6 +42,16 @@ module.exports = function (grunt) {
       js: {
         files: ['app/scripts/{,*/}*.js'],
         tasks: ['newer:jshint:all', 'newer:jscs:all'],
+        options: {
+          livereload: '<%= connect.options.livereload %>'
+        }
+      },
+      template: {
+        files: [
+          'app/scripts/app.js.tpl',
+          '.env.json'
+        ],
+        tasks: ['template:develop'],
         options: {
           livereload: '<%= connect.options.livereload %>'
         }
@@ -428,7 +440,25 @@ module.exports = function (grunt) {
         configFile: 'test/karma.conf.js',
         singleRun: true
       }
-    }
+    },
+    template: {
+      develop: {
+        'options': {
+          data: env.development
+        },
+        'files': {
+          'app/scripts/app.js': ['app/scripts/app.js.tpl'] 
+        }
+      },
+      product: {
+        'options': {
+          data: env.production
+        },
+        'files': {
+          'app/scripts/app.js': ['app/scripts/app.js.tpl'] 
+        }
+      }
+    },
   });
 
   grunt.registerTask('serve', 'Compile then start a connect web server', function (target) {
@@ -438,6 +468,7 @@ module.exports = function (grunt) {
 
     grunt.task.run([
       'clean:server',
+      'template:develop',
       'wiredep',
       'concurrent:server',
       'postcss:server',
@@ -462,6 +493,7 @@ module.exports = function (grunt) {
 
   grunt.registerTask('build', [
     'clean:dist',
+    'template:product',
     'wiredep',
     'useminPrepare',
     'concurrent:dist',
