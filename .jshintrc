@@ -28,6 +28,10 @@
     "Player": true,
     "restartGame": true,
     "swal": true,
-    "io": true
+    "io": true,
+    "getFrom": true,
+    "postTo": true,
+    "putTo": true,
+    "$": true
   }
 }

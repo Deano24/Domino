@@ -1,4 +1,4 @@
-
+'use strict';
 const getFrom = (url, cb) => {
     try {
         $.get( url, (data) => {
@@ -9,7 +9,7 @@ const getFrom = (url, cb) => {
     } catch (err) {
         cb(err);
     }
-}
+};
 
 const postTo = (url, data, cb) => {
     try {
@@ -21,7 +21,7 @@ const postTo = (url, data, cb) => {
     } catch (err) {
         cb(err);
     }
-}
+};
 
 const putTo = (url, data, cb) => {
     try {
@@ -38,4 +38,4 @@ const putTo = (url, data, cb) => {
     } catch (err) {
         cb(err);
     }
-}
+};

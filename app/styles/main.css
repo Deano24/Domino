@@ -79,7 +79,7 @@ legend.scheduler-border {
 }
 
 .btn-join {
-  color: #fff;
+  color: #fff !important;
   background: #E83A34;
   display: inline-block;
   font-size: 12px;
@@ -96,9 +96,31 @@ legend.scheduler-border {
   cursor: hand;
 }
 .btn-join:focus, .btn-join:hover {
-  color: #000;
+  color: #000 !important;
   text-decoration: underline;
 }
 .center {
   text-align: center;
+}
+.btn.btn-fab i.material-icons{
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  -webkit-transform: translate(-12px, -12px);
+  -ms-transform: translate(-12px, -12px);
+  -o-transform: translate(-12px, -12px);
+  transform: translate(-12px, -12px);
+  line-height: 24px;
+  width: 24px;
+}
+
+.bottom-right {
+  position: fixed;
+  bottom: 10;
+  right: 20;
+}
+
+.rooms, .news {
+  padding-bottom: 50px;
+  margin-bottom: 10px;
 }

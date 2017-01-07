@@ -49,6 +49,7 @@ module.exports = function (grunt) {
       template: {
         files: [
           'app/scripts/app.js.tpl',
+          'app/index.html.tpl',
           '.env.json'
         ],
         tasks: ['template:develop'],
@@ -447,7 +448,8 @@ module.exports = function (grunt) {
           data: env.development
         },
         'files': {
-          'app/scripts/app.js': ['app/scripts/app.js.tpl'] 
+          'app/scripts/app.js': ['app/scripts/app.js.tpl'],
+          'app/index.html': ['app/index.html.tpl']
         }
       },
       product: {
@@ -455,7 +457,8 @@ module.exports = function (grunt) {
           data: env.production
         },
         'files': {
-          'app/scripts/app.js': ['app/scripts/app.js.tpl'] 
+          'app/scripts/app.js': ['app/scripts/app.js.tpl'],
+          'app/index.html': ['app/index.html.tpl']
         }
       }
     },
