@@ -32,6 +32,8 @@
     "getFrom": true,
     "postTo": true,
     "putTo": true,
-    "$": true
+    "$": true,
+    "waitingDialog": true,
+    "played": true
   }
 }

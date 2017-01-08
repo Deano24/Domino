@@ -21,7 +21,8 @@
     "socket.io": "^1.7.2",
     "socket.io-client": "^1.7.2",
     "jquery": "^3.1.1",
-    "bootstrap-material-design": "^4.0.2"
+    "bootstrap-material-design": "^4.0.2",
+    "bootstrap-waitingfor": "^1.2.4"
   },
   "overrides": {
     "bootstrap": {

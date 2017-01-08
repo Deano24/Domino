@@ -1,11 +1,11 @@
 'use strict';
 
-toastr.options.timeOut = 1000;
-
 const renderer = PIXI.autoDetectRenderer(width(), height(), {backgroundColor : 0x21751C});
 document.body.appendChild(renderer.view);
 renderer.backgroundColor = 0x21751C;
 const stage = new PIXI.Container();
+
+waitingDialog.show('Waiting for players to Join....');
 
 /**
  * Sides of the board
@@ -32,15 +32,12 @@ let userAlias = localStorage.getItem('alias');
 function getUrlParameter(sParam) {
     var val = '';
     var parts = document.location.search.split('=');
-    console.log(parts);
-    console.log(parts);
     for (var i = 0; i < parts.length; i++) {
         if (parts[i] === '?'+sParam || parts[i] === '&'+sParam) {
             val = parts[i+1];
             break;
         }
     }
-    console.log(val);
     return val;
 }
 
@@ -60,14 +57,14 @@ const updateRender = () =>{
  */
 const showScene = () => {
     scenePlay.visible = false;
-    scenePlay.renderPlayers(userAlias);
+    scenePlay.renderPlayer(userAlias);
     scenePlay.visible = true;
     turnManager.playScene = scenePlay;
-    turnManager.updateRender = updateRender;
     renderer.render(stage);
 };
+let socket;
 const socketSetup = () => {
-    const socket = io('http://localhost:8080');
+    socket = io('http://localhost:8080');
     socket.on('connect', () => {
         socket.emit('playerInfo', {name: userAlias, room: room});
     });
@@ -77,20 +74,76 @@ const socketSetup = () => {
         scenePlay.showPlayers();
     });
     socket.on('start', () => {
-        console.log('start');
-        //setup();
+        waitingDialog.hide();
     });
     socket.on('playerJoined', (info) => {
-        scenePlay.addPlayers({name: info.name, seat: info.seatNo});
+        scenePlay.addPlayers({name: info.name, seatNo: info.seatNo});
         scenePlay.showPlayers();
     });
-    socket.on('hand', (obj) => {
-        console.log('hand');
-        console.log(obj);
+    socket.on('hand', (hand) => {
+        scenePlay.showHand(hand.hand);
+    });
+    socket.on('updateEnemyHand', (hand) => {
+        scenePlay.updateEnemyHand(hand.handCount, hand.seatNo);
+    });
+    socket.on('updateHand', (hand) => {
+        scenePlay.updateHand(hand.hand);
+    });
+    socket.on('pose', () => {
+        scenePlay.pose();
+    });
+    socket.on('play', () => {
+        toastr.info('Your Play!');
+        scenePlay.allowPlayUpdate(true);
+    });
+    socket.on('pass', () => {
+        scenePlay.allowPlayUpdate(false);
+        toastr.info('You Pass!'); 
+    });
+    socket.on('badPlay', (obj) => {
+        toastr.error(obj.message);
+    });
+    socket.on('playerPassed', (obj) => {
+        toastr.info(obj.message);
+    });
+    socket.on('choices', (obj) => {
+        scenePlay.setChoices(obj.choices);
+    });
+    socket.on('gameOver', (obj) => {
+        swal({
+            title: obj.title,
+            text: obj.message,
+            html: true
+        }, () => {
+            window.location.href = 'http://localhost:9000/';
+        });
+    });
+    socket.on('roundOver', (obj) => {
+        swal({
+            title: obj.title,
+            text: obj.message,
+            timer: 5000,
+            showConfirmButton: false,
+            html: true
+        });
+        setTimeout(() => {scenePlay.resetBoard();}, 2000);
+    });
+    socket.on('playerPlayed', (play) => {
+        toastr.info(`${play.playerName} played ${play.play.domino}`);
+        if (play.play.isPose) {
+            scenePlay.putDominoOnBoard('6-6', width()/2,(height()/2 - 35), null, {pose: true});
+        } else {
+            turnManager.handlePlay(play.play);
+        }
     });
     socket.on('disconnect', () => {
         console.log('disconnected');
     });
+};
+
+const played = (play) => {
+    scenePlay.allowPlayUpdate(false);
+    socket.emit('played', {room: room, play: play});
 };
 
 const setup = () => {
@@ -107,32 +160,6 @@ const restartGame = () => {
     scenePlay.resetDomino();
     scenePlay.resetBoard();
     showScene();
-};
-
-/**
- * Handles the ending of the game
- * @param  {Array} standings - Array of objects containing the standings
- */
-const handleGameOver = (standings) => {
-    standings.sort(function(a, b){return b.score-a.score;});
-    let losers = '<ul>';
-    for (let i = 1; i < 4; i++) {
-        if (standings[i].score === 0) {
-            losers += `<li>${standings[i].info.name}</li>`;
-        }
-    }
-    losers += '</ul>';
-    let message = `The winner with a score of ${standings[0].score} is <b>${standings[0].info.name}</b>. And the following were put to shame: `;
-    if (standings[0].score > 0 && standings[1].score > 0 && standings[2].score > 0&& standings[3].score > 0){
-       message = 'The game has ended in a draw :('; 
-    }
-    swal({
-        title: 'Game Over',
-        text: message,
-        html: true
-    }, function () {
-        window.location.href = 'http://localhost:9000/';
-    });
 };
 
 // Load them google fonts before starting...!

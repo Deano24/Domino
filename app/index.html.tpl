@@ -96,7 +96,6 @@
                     });
                     return console.log(err);
                 }
-                console.log(res);
                 getRooms();
                 swal({
                     title: 'Room Creation!',
@@ -128,7 +127,7 @@
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-default" data-dismiss="modal" onclick="formReset()">Close</button>
-                <button type="button" class="btn btn-primary" onclick="createRoom()">Save changes</button>
+                <button type="button" class="btn btn-primary" onclick="createRoom()">Create</button>
             </div>
         </div>
     </div>
